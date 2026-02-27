@@ -14,7 +14,7 @@
 <script type="text/babel">
 const { useState } = React;
 
-const days = [
+const gymDays = [
   {
     name: "Monday", theme: "Hip Isolation & Winding", emoji: "🌀", color: "#7c3aed", light: "#ede9fe",
     exercises: [
@@ -40,7 +40,7 @@ const days = [
   {
     name: "Wednesday", theme: "Core Stamina", emoji: "💪", color: "#0891b2", light: "#e0f2fe",
     exercises: [
-      { name: "Dead Bug", sets: 3, reps: "10 each side", notes: "Slow and controlled, lower back stays pressed to floor the whole time" },
+      { name: "Dead Bug", sets: 3, reps: "10 each side", notes: "Slow and controlled, lower back stays pressed to floor" },
       { name: "Hollow Body Hold", sets: 3, reps: "20–30 sec hold", notes: "Arms overhead, legs out, lower back flat — breathe through it" },
       { name: "Slow Mountain Climbers", sets: 3, reps: "20 each leg", notes: "3 seconds each rep, feel the deep core engage" },
       { name: "Hip Dip Plank", sets: 3, reps: "15 each side", notes: "Side plank, dip hip to floor and back up" },
@@ -72,9 +72,70 @@ const days = [
   },
 ];
 
+const homeDays = [
+  {
+    name: "Monday", theme: "Hip Isolation & Winding", emoji: "🌀", color: "#7c3aed", light: "#ede9fe",
+    exercises: [
+      { name: "Standing Hip Circles", sets: 3, reps: "20 each direction", notes: "Slow and controlled, make them big and deliberate" },
+      { name: "Figure 8 Hip Rolls", sets: 3, reps: "30 seconds", notes: "Draw a figure 8 with your hips, keep upper body still" },
+      { name: "Isolated Hip Pops", sets: 3, reps: "20 each side", notes: "Pop one hip out at a time, freeze at the top" },
+      { name: "Kneeling Hip Winds", sets: 3, reps: "30 seconds", notes: "On knees, wind hips in slow circles" },
+      { name: "Pelvic Tilts", sets: 3, reps: "15", notes: "Standing, tuck and release pelvis — your base movement" },
+      { name: "Deep Butterfly Stretch", sets: 2, reps: "60 sec hold", notes: "Sit tall, press knees toward floor gently" },
+    ]
+  },
+  {
+    name: "Tuesday", theme: "Twerk & Bounce Control", emoji: "🔥", color: "#db2777", light: "#fce7f3",
+    exercises: [
+      { name: "Banded Sumo Squat Pulses", sets: 3, reps: "30 pulses", notes: "Band above knees, stay low and pulse fast" },
+      { name: "Banded Donkey Kick Bounce", sets: 3, reps: "20 each leg", notes: "Band around ankles, kick up and bounce at top" },
+      { name: "Twerk Squat", sets: 3, reps: "20", notes: "Squat position, arch back, bounce glutes independently" },
+      { name: "Squat Jumps", sets: 3, reps: "15", notes: "Modify pop squats — jump or step out based on energy" },
+      { name: "Standing Booty Pop", sets: 3, reps: "30 seconds", notes: "Feet hip width, pop glutes back alternating sides" },
+      { name: "Hip Flexor Stretch", sets: 2, reps: "60 sec each side", notes: "Low lunge using floor, sink hips forward" },
+    ]
+  },
+  {
+    name: "Wednesday", theme: "Core Stamina", emoji: "💪", color: "#0891b2", light: "#e0f2fe",
+    exercises: [
+      { name: "Dead Bug", sets: 3, reps: "10 each side", notes: "Lower back stays pressed to floor the whole time" },
+      { name: "Hollow Body Hold", sets: 3, reps: "20–30 sec hold", notes: "Arms overhead, legs out, lower back flat" },
+      { name: "Slow Mountain Climbers", sets: 3, reps: "20 each leg", notes: "3 seconds each rep, feel the deep core" },
+      { name: "Hip Dip Plank", sets: 3, reps: "15 each side", notes: "Side plank on floor, dip hip and back up" },
+      { name: "Reverse Crunch", sets: 3, reps: "15", notes: "Lift hips using lower abs, not momentum" },
+      { name: "Seated Twist Hold", sets: 2, reps: "30 sec each side", notes: "Seated on floor, lean back slightly and twist" },
+    ]
+  },
+  {
+    name: "Thursday", theme: "Inner Thigh & Pelvic Floor", emoji: "✨", color: "#059669", light: "#d1fae5",
+    exercises: [
+      { name: "Kegels — Quick Pulses", sets: 3, reps: "20 pulses", notes: "Contract and release pelvic floor rapidly" },
+      { name: "Kegels — Long Hold", sets: 3, reps: "10 sec hold × 10", notes: "Squeeze, hold 10 seconds, fully release" },
+      { name: "Sumo Squat Hold & Squeeze", sets: 3, reps: "10 sec hold × 10", notes: "Hold sumo squat, squeeze inner thighs together" },
+      { name: "Seated Butterfly Pulses", sets: 3, reps: "30 pulses", notes: "Feet together on floor, pulse knees down" },
+      { name: "Banded Floor Squeeze", sets: 3, reps: "20", notes: "Band around knees, seated on floor, squeeze knees together" },
+      { name: "Bridge with Pelvic Floor Hold", sets: 3, reps: "10 reps", notes: "Squeeze pelvic floor AND glutes at top for 3 seconds" },
+    ]
+  },
+  {
+    name: "Friday", theme: "Flexibility & Full Body Flow", emoji: "🌸", color: "#d97706", light: "#fef3c7",
+    exercises: [
+      { name: "Deep Pigeon Pose", sets: 2, reps: "90 sec each side", notes: "Most important hip opener — breathe into it" },
+      { name: "Figure 4 Stretch", sets: 2, reps: "60 sec each side", notes: "On your back, cross ankle over knee" },
+      { name: "Lizard Pose", sets: 2, reps: "60 sec each side", notes: "Deep lunge, both hands inside front foot" },
+      { name: "Supine Twist", sets: 2, reps: "60 sec each side", notes: "On back, drop knees to one side, arms out" },
+      { name: "Full Hip Wind Flow", sets: 2, reps: "2 minutes", notes: "Music on — circles, figure 8s, pops and winds freely" },
+      { name: "Deep Squat Hold", sets: 3, reps: "60 sec hold", notes: "Heels flat, hands pressed against inner knees" },
+    ]
+  },
+];
+
 function App() {
   const [dayIdx, setDayIdx] = useState(0);
   const [checked, setChecked] = useState({});
+  const [isHome, setIsHome] = useState(false);
+
+  const days = isHome ? homeDays : gymDays;
   const day = days[dayIdx];
   const toggle = (key) => setChecked(p => ({ ...p, [key]: !p[key] }));
   const done = day.exercises.filter((_, i) => checked[`${dayIdx}-${i}`]).length;
@@ -93,6 +154,21 @@ function App() {
         <div style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>{done} of {total} complete</div>
       </div>
 
+      {/* Mode Toggle */}
+      <div style={{ display: "flex", background: "white", borderRadius: 10, padding: 4, marginBottom: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }}>
+        <button onClick={() => { setIsHome(false); setChecked({}); }}
+          style={{ flex: 1, padding: "9px", borderRadius: 8, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 700,
+            background: !isHome ? "#7c3aed" : "transparent", color: !isHome ? "white" : "#6b7280" }}>
+          🏋️ Gym Mode
+        </button>
+        <button onClick={() => { setIsHome(true); setChecked({}); }}
+          style={{ flex: 1, padding: "9px", borderRadius: 8, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 700,
+            background: isHome ? "#7c3aed" : "transparent", color: isHome ? "white" : "#6b7280" }}>
+          🏠 Home Mode
+        </button>
+      </div>
+
+      {/* Day Tabs */}
       <div style={{ marginBottom: 16 }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 6, letterSpacing: 1 }}>DAY</div>
         <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 4 }}>
@@ -108,7 +184,9 @@ function App() {
       </div>
 
       <div style={{ fontSize: 17, fontWeight: 800, color: "#111827", marginBottom: 4 }}>{day.emoji} {day.name} — {day.theme}</div>
-      <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 14 }}>Put on your favorite playlist and get into it 🎵</div>
+      <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 14 }}>
+        {isHome ? "🏠 Home version · Bands & bodyweight only 🎵" : "Put on your favorite playlist and get into it 🎵"}
+      </div>
 
       {day.exercises.map((ex, i) => {
         const key = `${dayIdx}-${i}`;
