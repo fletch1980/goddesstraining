@@ -3,201 +3,134 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Goddess Training</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #f9fafb; font-family: system-ui, sans-serif; }
-  </style>
+  <style>* {box-sizing:border-box;margin:0;padding:0;} body{background:#0a0010;font-family:system-ui,sans-serif;}</style>
 </head>
 <body>
 <div id="root"></div>
-<script type="text/babel">
+<script>
+var DAYS = [
+  { label:"UPPER", title:"💪 Upper Body", sub:"Mon & Thu · Chest, back, shoulders, arms · Rest 90 sec", exercises:[
+    { name:"Chest Press", area:"Chest & Shoulders", emoji:"💪", sets:"3 × 10-12", weights:["10-15 lb each","15-20 lb each","20-25 lb each"], notes:"Machine or dumbbells. Push away from chest, lower slowly 3 counts.", tip:"Keep shoulder blades pinched back — protects shoulders and isolates chest", howto:["Lie on bench or sit in machine, weights at chest level","Shoulder blades pinched together and pressed into bench","Push weight away from chest — exhale as you push","Don't lock elbows at top — keep slight bend","Lower slowly — 3 full counts down — feel the chest stretch","The slow lowering phase builds more strength than the push"] },
+    { name:"Lat Pulldown", area:"Back & Lats", emoji:"🔙", sets:"3 × 10-12", weights:["Light-moderate","Moderate","Moderate-heavy"], notes:"Grip slightly wider than shoulders. Lead with elbows, not hands.", tip:"Think: pull your elbows into your back pockets — this cue changes everything", howto:["Grip bar slightly wider than shoulder-width, overhand","Sit tall, slight lean back, chest up","Pull bar down to upper chest — lead with ELBOWS","Squeeze shoulder blades together at bottom","Hold 1 second — feel lats fully contracted","Let bar rise slowly — full stretch at top before next rep"] },
+    { name:"Shoulder Press", area:"Shoulders", emoji:"🏋️", sets:"3 × 10", weights:["8-10 lb each","10-15 lb each","15-20 lb each"], notes:"Sit or stand. Press straight up — don't arch back to get the weight up.", tip:"Core tight the entire set — prevents lower back strain", howto:["Sit or stand with dumbbells at shoulder height, elbows at 90°","Keep core tight — don't arch lower back to push","Press straight up — dumbbells close at top without touching","Lower slowly back to shoulder height — full range every rep","Stop the set if you start compensating with your back"] },
+    { name:"Seated Cable Row", area:"Mid Back", emoji:"💪", sets:"3 × 12", weights:["Light-moderate","Moderate","Moderate-heavy"], notes:"Pull handle to belly button. Squeeze shoulder blades — hold 1 second.", tip:"Don't rock back and forth — momentum steals the work from your back", howto:["Sit tall, slight knee bend, chest up","Reach forward and grip — full stretch before starting","Pull handle to belly button, elbows passing your sides","Squeeze shoulder blades together, hold 1 second","Reach forward slowly — full stretch before next rep","If you're rocking, lower the weight"] },
+    { name:"Bicep Curl", area:"Biceps", emoji:"🤜", sets:"3 × 12", weights:["10 lb each","12-15 lb each","15-20 lb each"], notes:"Elbows glued to sides. Lower ALL the way down — full range.", tip:"Rotate palm fully up at the top for full bicep contraction", howto:["Stand with dumbbells at sides, palms forward","Elbows pressed firmly against sides — they don't move","Curl up — rotate palm fully up as you reach top","Squeeze bicep hard at top","Lower ALL the way down — full extension before next rep","No swinging — if swinging, weight is too heavy"] },
+    { name:"Tricep Pushdown", area:"Triceps", emoji:"💪", sets:"3 × 12", weights:["Light","Light-moderate","Moderate"], notes:"Cable machine, elbows at sides. Push straight down — fully straighten arms.", tip:"Elbows are the anchor — they stay pinned to sides throughout", howto:["Face cable machine, grip bar at chest height","Elbows bent 90°, pressed against sides","Push bar down until arms fully straight","Squeeze triceps hard at bottom","Let bar rise slowly — control the weight up","Only forearms move — elbows stay locked"] }
+  ]},
+  { label:"LOWER", title:"🦵 Lower Body", sub:"Tue & Fri · Legs, glutes, calves · Rest 90-120 sec", exercises:[
+    { name:"Goblet Squat", area:"Quads & Glutes", emoji:"🦵", sets:"3 × 12", weights:["15-20 lb dumbbell","25-30 lb","35-40 lb"], notes:"Hold at chest, sit back and down. Push knees out throughout.", tip:"Use elbows to push knees wider at the bottom — opens hips deeper", howto:["Hold dumbbell vertically at chest, feet shoulder-width","Squat down — sit back AND down, pushing knees out","Chest tall — don't fold forward","Elbows press knees out at the bottom","Drive through full foot to stand","Squeeze glutes at top before next rep"] },
+    { name:"Romanian Deadlift", area:"Hamstrings & Glutes", emoji:"🏋️", sets:"3 × 10", weights:["20-25 lb dumbbells","30-35 lb","40-50 lb"], notes:"Hinge at hips, push butt back. Flat back the entire movement.", tip:"Imagine your back is a table — keep it flat enough to set a glass on", howto:["Stand with dumbbells in front of thighs, soft knee bend","Push hips BACK — hinge at hip not waist","Lower weights along legs, keeping them close","Stop when you feel strong hamstring stretch","Drive hips forward to return — squeeze glutes hard at top","The stretch at the bottom is the point — don't rush past it"] },
+    { name:"Hip Thrust", area:"Glutes — Primary", emoji:"🍑", sets:"4 × 12", weights:["45 lb bar","65-75 lb","85-95 lb"], notes:"Upper back on bench, bar on hips. Drive through heels, 1-second squeeze.", tip:"Tuck pelvis slightly at top — this extra curl maximizes glute contraction", howto:["Upper back rests on bench, padded bar across hips","Feet flat, hip-width, knees bent 90°","Drive through heels — thrust hips up","Tuck pelvis slightly under at top and SQUEEZE hard","Hold 1 full second before lowering","Lower slowly — 3 counts down"] },
+    { name:"Step-Up", area:"Quads, Glutes & Balance", emoji:"📦", sets:"3 × 12 each", weights:["10-15 lb dumbbells","15-20 lb","20-25 lb"], notes:"Full foot on bench. Drive through elevated heel — don't push off the floor.", tip:"Taller bench = more glute activation — work up to a higher step over time", howto:["Stand facing bench, dumbbells at sides","Place one foot FULLY on bench — whole foot, not just toes","Drive through elevated heel to step up — not the floor foot","Stand fully on bench, then lower trailing leg slowly","Complete all reps one leg before switching","If you push off the floor foot, bench may be too high"] },
+    { name:"Standing Calf Raise", area:"Calves", emoji:"🦵", sets:"3 × 20", weights:["Bodyweight","Hold 15-20 lb","Hold 25-30 lb"], notes:"Rise as high as possible on toes. Heel drops below step on the way down.", tip:"3 counts down on the lowering phase — calves respond to slow controlled reps", howto:["Stand with toes on step edge, heels hanging off","Rise up on toes as HIGH as possible","Hold at top 1 second — feel calf contract","Lower heels slowly — all the way below step level","Full range down = full stretch — this is where calves grow","If no step: stand flat, still aim for maximum height"] }
+  ]},
+  { label:"TOTAL", title:"⚡ Total Body", sub:"Wednesday · 4 rounds · Rest 2 min between rounds", exercises:[
+    { name:"Squat to Press", area:"Full Body — Compound", emoji:"⚡", sets:"4 rounds × 10", weights:["8-10 lb each","10-12 lb each","12-15 lb each"], notes:"Squat down, press overhead as you stand. One fluid motion.", tip:"Press should start as you're coming UP from squat — use that leg drive", howto:["Dumbbells at shoulder height, feet shoulder-width","Squat down — control the descent","As you drive up, press dumbbells overhead","Press begins as you start rising — use your leg drive","Lower dumbbells back to shoulders as you descend","One fluid motion — squat and press flow together"] },
+    { name:"Deadlift to Row", area:"Back, Hamstrings & Glutes", emoji:"🏋️", sets:"4 rounds × 10", weights:["15-20 lb dumbbells","20-25 lb","25-30 lb"], notes:"Hinge into RDL position, row both dumbbells to ribs, then stand.", tip:"Keep elbows close to body during row — maximizes lat activation", howto:["Hold dumbbells, hinge forward into RDL position","At the bottom, row both dumbbells to ribcage","Elbows pass sides, squeeze shoulder blades","Lower dumbbells back down","Drive hips forward to stand tall","Trains back and posterior chain in one movement"] },
+    { name:"Reverse Lunge to Curl", area:"Legs & Biceps", emoji:"🦶", sets:"4 rounds × 10 each", weights:["8-10 lb each","10-12 lb each","12-15 lb each"], notes:"Step back into lunge, curl dumbbells as you lunge. Stand and lower.", tip:"Curl happens during the lunge — both movements at the same time", howto:["Stand with dumbbells at sides","Step one foot back into reverse lunge","Lower back knee toward floor","Simultaneously curl both dumbbells to shoulders","Drive through front heel to return to standing","Lower dumbbells as you stand, alternate legs"] },
+    { name:"Plank Row", area:"Core & Back", emoji:"🏋️", sets:"4 rounds × 8 each", weights:["10 lb dumbbell","12-15 lb","15-20 lb"], notes:"Plank on dumbbells. Row one at a time — fight the rotation with your core.", tip:"Zero hip rotation is the goal — if hips swing, lower the weight", howto:["High plank on dumbbells, shoulder-width","Body in straight line — don't let hips drop or pike","Row one dumbbell to hip — elbow passes side","Hips should NOT rotate — resist with core","Lower slowly, repeat other side","Core exercise disguised as a back exercise"] }
+  ]},
+  { label:"CORE", title:"⚡ Core Finisher", sub:"End of every session · 10 min", exercises:[
+    { name:"Plank Hold", area:"Core Stability", emoji:"🏋️", sets:"3 sets", weights:["30 seconds","45 seconds","60 seconds"], notes:"Forearms on floor, body straight. Squeeze abs AND glutes the entire hold.", tip:"Imagine pulling elbows toward knees — creates full core tension", howto:["Forearms on floor, elbows under shoulders","Body straight from head to heels","Squeeze abs tight — squeeze glutes tight","Breathe steadily — don't hold your breath","If hips drop: rest and reset rather than hold bad position","Build from 30 seconds toward 60+ over 12 weeks"] },
+    { name:"Dead Bug", area:"Deep Core Stability", emoji:"🐛", sets:"3 × 10 each", weights:["Bodyweight","Bodyweight","Hold 5 lb plate"], notes:"On back, lower opposite arm and leg. Lower back MUST stay on floor.", tip:"If lower back lifts off at all — you've gone too far. Shorten the range.", howto:["Lie on back, arms up, knees bent 90° in air","Press lower back INTO floor — must stay there throughout","Lower right arm back overhead and left leg toward floor simultaneously","Lower back stays glued to floor — this is the whole point","Return both limbs, switch sides","The slower you go, the harder it is — that's correct"] },
+    { name:"Bird Dog", area:"Back & Core Stability", emoji:"🐦", sets:"3 × 10 each", weights:["Bodyweight","Bodyweight","Ankle + wrist weight"], notes:"On all fours, extend opposite arm and leg. Hold 2 seconds. No rotation.", tip:"Imagine balancing a glass of water on your lower back — don't spill it", howto:["On all fours, wrists under shoulders, knees under hips","Extend right arm forward and left leg back simultaneously","Hold 2 full seconds — no rotating, no dropping","Bring both limbs in slowly, touch knee to elbow","Extend again for next rep","Hips square to floor the entire time"] },
+    { name:"Hip Circle", area:"Hip Mobility & Recovery", emoji:"🔄", sets:"2 × 30 sec each way", weights:["Bodyweight","Bodyweight","Bodyweight"], notes:"Standing, slow hip circles. Feet planted, shoulders still. Big and deliberate.", tip:"This is recovery — decompresses lower back and hips after your workout", howto:["Stand feet hip-width, hands on hips","Make large circles with hips — clockwise first","As big and slow as possible","Upper body stays still — all movement from hips","Switch to counterclockwise","Decompresses lower back and loosens hips after lifting"] }
+  ]}
+];
 
+var TIPS = [
+  { emoji:"📅", title:"Weekly Schedule", body:"Mon/Thu = Upper Body · Tue/Fri = Lower Body · Wed = Total Body Circuit · Sat/Sun = Rest or NGF. This trains every muscle twice a week — the proven sweet spot for strength gains." },
+  { emoji:"💊", title:"Post-Bypass Protein", body:"60-80g daily minimum. Have a protein source at every meal. Muscle cannot grow without it — this matters more than any specific exercise." },
+  { emoji:"📈", title:"Progressive Overload", body:"Every 1-2 weeks, add 5 lbs OR 2 reps to at least one exercise per day. Same weight every week = maintenance only." },
+  { emoji:"🧠", title:"Mind-Muscle Connection", body:"Before every set, pause and consciously think about the muscle you're about to work. This alone increases activation by 20-30%." },
+  { emoji:"🩺", title:"Joint Care (Post-Bypass)", body:"Start lighter than you think. Joints and connective tissue need 4-6 weeks to adapt even when movement feels easy. Increase weight gradually." },
+  { emoji:"🏆", title:"12-Week Milestones", body:"Week 4: Exercises feel familiar. Week 8: Adding weight regularly. Week 12: Visible definition and real strength. Trust the process." }
+];
+</script>
+<script type="text/babel">
 var useState = React.useState;
 
-var gymDays = [
-  {
-    name: "Monday", theme: "Hip Isolation & Winding", emoji: "🌀", color: "#7c3aed", light: "#ede9fe",
-    exercises: [
-      { name: "Standing Hip Circles", sets: 3, reps: "20 each direction", notes: "Slow and controlled, make them big and deliberate" },
-      { name: "Figure 8 Hip Rolls", sets: 3, reps: "30 seconds", notes: "Draw a figure 8 with your hips, keep upper body still" },
-      { name: "Isolated Hip Pops", sets: 3, reps: "20 each side", notes: "Pop one hip out at a time, freeze at the top" },
-      { name: "Kneeling Hip Winds", sets: 3, reps: "30 seconds", notes: "On knees, wind hips in slow circles" },
-      { name: "Pelvic Tilts", sets: 3, reps: "15", notes: "Standing, tuck and release pelvis — your base movement" },
-      { name: "Deep Butterfly Stretch", sets: 2, reps: "60 sec hold", notes: "Sit tall, press knees toward floor gently" }
-    ]
-  },
-  {
-    name: "Tuesday", theme: "Twerk & Bounce Control", emoji: "🔥", color: "#db2777", light: "#fce7f3",
-    exercises: [
-      { name: "Sumo Squat Pulses", sets: 3, reps: "30 pulses", notes: "Stay low, small fast bounces — feel the burn" },
-      { name: "Donkey Kick Bounce", sets: 3, reps: "20 each leg", notes: "On all fours, kick up and add a small bounce at the top" },
-      { name: "Twerk Squat", sets: 3, reps: "20", notes: "Squat position, arch back, bounce glutes up and down independently" },
-      { name: "Pop Squats", sets: 3, reps: "15", notes: "Jump feet out to squat, jump back in — explosive and rhythmic" },
-      { name: "Standing Booty Pop", sets: 3, reps: "30 seconds", notes: "Feet hip width, slight bend, pop glutes back alternating sides" },
-      { name: "Hip Flexor Stretch", sets: 2, reps: "60 sec each side", notes: "Low lunge, sink hips forward and down" }
-    ]
-  },
-  {
-    name: "Wednesday", theme: "Core Stamina", emoji: "💪", color: "#0891b2", light: "#e0f2fe",
-    exercises: [
-      { name: "Dead Bug", sets: 3, reps: "10 each side", notes: "Slow and controlled, lower back stays pressed to floor" },
-      { name: "Hollow Body Hold", sets: 3, reps: "20-30 sec hold", notes: "Arms overhead, legs out, lower back flat — breathe through it" },
-      { name: "Slow Mountain Climbers", sets: 3, reps: "20 each leg", notes: "3 seconds each rep, feel the deep core engage" },
-      { name: "Hip Dip Plank", sets: 3, reps: "15 each side", notes: "Side plank, dip hip to floor and back up" },
-      { name: "Reverse Crunch", sets: 3, reps: "15", notes: "Lift hips off floor using lower abs, not momentum" },
-      { name: "Seated Twist Hold", sets: 2, reps: "30 sec each side", notes: "Seated, lean back slightly, twist and hold" }
-    ]
-  },
-  {
-    name: "Thursday", theme: "Inner Thigh & Pelvic Floor", emoji: "✨", color: "#059669", light: "#d1fae5",
-    exercises: [
-      { name: "Kegels — Quick Pulses", sets: 3, reps: "20 pulses", notes: "Contract and release pelvic floor rapidly" },
-      { name: "Kegels — Long Hold", sets: 3, reps: "10 sec hold x 10", notes: "Squeeze, hold 10 seconds, fully release. The release matters!" },
-      { name: "Sumo Squat Hold & Squeeze", sets: 3, reps: "10 sec hold x 10", notes: "Hold sumo squat, squeeze inner thighs toward each other" },
-      { name: "Seated Butterfly Pulses", sets: 3, reps: "30 pulses", notes: "Feet together, pulse knees toward floor — inner thigh burn" },
-      { name: "Resistance Band Seated Squeeze", sets: 3, reps: "20", notes: "Band around knees, seated, squeeze knees together against band" },
-      { name: "Bridge with Pelvic Floor Hold", sets: 3, reps: "10 reps", notes: "At the top squeeze pelvic floor AND glutes for 3 seconds" }
-    ]
-  },
-  {
-    name: "Friday", theme: "Flexibility & Full Body Flow", emoji: "🌸", color: "#d97706", light: "#fef3c7",
-    exercises: [
-      { name: "Deep Pigeon Pose", sets: 2, reps: "90 sec each side", notes: "Most important hip opener — breathe into the tightness" },
-      { name: "Figure 4 Stretch", sets: 2, reps: "60 sec each side", notes: "On your back, cross ankle over knee, pull toward chest" },
-      { name: "Lizard Pose", sets: 2, reps: "60 sec each side", notes: "Deep lunge with both hands inside front foot" },
-      { name: "Supine Twist", sets: 2, reps: "60 sec each side", notes: "On back, drop knees to one side, arms out" },
-      { name: "Full Hip Wind Flow", sets: 2, reps: "2 minutes", notes: "Put on music, combine circles, figure 8s, pops and winds freely" },
-      { name: "Deep Squat Hold", sets: 3, reps: "60 sec hold", notes: "Heels flat if possible, hands pressed against inner knees" }
-    ]
-  }
-];
-
-var homeDays = [
-  {
-    name: "Monday", theme: "Hip Isolation & Winding", emoji: "🌀", color: "#7c3aed", light: "#ede9fe",
-    exercises: [
-      { name: "Standing Hip Circles", sets: 3, reps: "20 each direction", notes: "Slow and controlled, make them big and deliberate" },
-      { name: "Figure 8 Hip Rolls", sets: 3, reps: "30 seconds", notes: "Draw a figure 8 with your hips, keep upper body still" },
-      { name: "Isolated Hip Pops", sets: 3, reps: "20 each side", notes: "Pop one hip out at a time, freeze at the top" },
-      { name: "Kneeling Hip Winds", sets: 3, reps: "30 seconds", notes: "On knees, wind hips in slow circles" },
-      { name: "Pelvic Tilts", sets: 3, reps: "15", notes: "Standing, tuck and release pelvis — your base movement" },
-      { name: "Deep Butterfly Stretch", sets: 2, reps: "60 sec hold", notes: "Sit tall, press knees toward floor gently" }
-    ]
-  },
-  {
-    name: "Tuesday", theme: "Twerk & Bounce Control", emoji: "🔥", color: "#db2777", light: "#fce7f3",
-    exercises: [
-      { name: "Banded Sumo Squat Pulses", sets: 3, reps: "30 pulses", notes: "Band above knees, stay low and pulse fast" },
-      { name: "Banded Donkey Kick Bounce", sets: 3, reps: "20 each leg", notes: "Band around ankles, kick up and bounce at top" },
-      { name: "Twerk Squat", sets: 3, reps: "20", notes: "Squat position, arch back, bounce glutes independently" },
-      { name: "Squat Jumps", sets: 3, reps: "15", notes: "Modify as needed — jump or step out based on energy" },
-      { name: "Standing Booty Pop", sets: 3, reps: "30 seconds", notes: "Feet hip width, pop glutes back alternating sides" },
-      { name: "Hip Flexor Stretch", sets: 2, reps: "60 sec each side", notes: "Low lunge on floor, sink hips forward" }
-    ]
-  },
-  {
-    name: "Wednesday", theme: "Core Stamina", emoji: "💪", color: "#0891b2", light: "#e0f2fe",
-    exercises: [
-      { name: "Dead Bug", sets: 3, reps: "10 each side", notes: "Lower back stays pressed to floor the whole time" },
-      { name: "Hollow Body Hold", sets: 3, reps: "20-30 sec hold", notes: "Arms overhead, legs out, lower back flat" },
-      { name: "Slow Mountain Climbers", sets: 3, reps: "20 each leg", notes: "3 seconds each rep, feel the deep core" },
-      { name: "Hip Dip Plank", sets: 3, reps: "15 each side", notes: "Side plank on floor, dip hip and back up" },
-      { name: "Reverse Crunch", sets: 3, reps: "15", notes: "Lift hips using lower abs, not momentum" },
-      { name: "Seated Twist Hold", sets: 2, reps: "30 sec each side", notes: "Seated on floor, lean back slightly and twist" }
-    ]
-  },
-  {
-    name: "Thursday", theme: "Inner Thigh & Pelvic Floor", emoji: "✨", color: "#059669", light: "#d1fae5",
-    exercises: [
-      { name: "Kegels — Quick Pulses", sets: 3, reps: "20 pulses", notes: "Contract and release pelvic floor rapidly" },
-      { name: "Kegels — Long Hold", sets: 3, reps: "10 sec hold x 10", notes: "Squeeze, hold 10 seconds, fully release" },
-      { name: "Sumo Squat Hold & Squeeze", sets: 3, reps: "10 sec hold x 10", notes: "Hold sumo squat, squeeze inner thighs together" },
-      { name: "Seated Butterfly Pulses", sets: 3, reps: "30 pulses", notes: "Feet together on floor, pulse knees down" },
-      { name: "Banded Floor Squeeze", sets: 3, reps: "20", notes: "Band around knees, seated on floor, squeeze knees together" },
-      { name: "Bridge with Pelvic Floor Hold", sets: 3, reps: "10 reps", notes: "Squeeze pelvic floor AND glutes at top for 3 seconds" }
-    ]
-  },
-  {
-    name: "Friday", theme: "Flexibility & Full Body Flow", emoji: "🌸", color: "#d97706", light: "#fef3c7",
-    exercises: [
-      { name: "Deep Pigeon Pose", sets: 2, reps: "90 sec each side", notes: "Most important hip opener — breathe into it" },
-      { name: "Figure 4 Stretch", sets: 2, reps: "60 sec each side", notes: "On your back, cross ankle over knee" },
-      { name: "Lizard Pose", sets: 2, reps: "60 sec each side", notes: "Deep lunge, both hands inside front foot" },
-      { name: "Supine Twist", sets: 2, reps: "60 sec each side", notes: "On back, drop knees to one side, arms out" },
-      { name: "Full Hip Wind Flow", sets: 2, reps: "2 minutes", notes: "Music on — circles, figure 8s, pops and winds freely" },
-      { name: "Deep Squat Hold", sets: 3, reps: "60 sec hold", notes: "Heels flat, hands pressed against inner knees" }
-    ]
-  }
-];
+function Card(props) {
+  var ex = props.ex, phase = props.phase, isDone = props.isDone, isOpen = props.isOpen;
+  return React.createElement("div", { style:{background:isDone?"#0f1f0f":"#0d1f1a",border:"2px solid "+(isDone?"#166534":"#0d3b2e"),borderRadius:12,padding:"14px 16px",marginBottom:12} },
+    React.createElement("div", { onClick:props.onCheck, style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6,cursor:"pointer"} },
+      React.createElement("div", { style:{display:"flex",alignItems:"center",gap:8} },
+        React.createElement("span", { style:{fontSize:20} }, ex.emoji),
+        React.createElement("div", null,
+          React.createElement("div", { style:{fontWeight:700,fontSize:14,color:isDone?"#4ade80":"white"} }, (isDone?"✅ ":"")+ex.name),
+          React.createElement("div", { style:{fontSize:11,color:"#3aedcc",fontWeight:600,marginTop:2} }, ex.area)
+        )
+      ),
+      React.createElement("div", { style:{fontSize:11,color:"#6b7280",textAlign:"right"} },
+        ex.sets, React.createElement("br"),
+        React.createElement("span", { style:{color:"#3aedcc",fontWeight:700} }, ex.weights[phase])
+      )
+    ),
+    React.createElement("div", { style:{fontSize:12,color:"#9ca3af",lineHeight:1.5,marginBottom:8} }, ex.notes),
+    React.createElement("div", { style:{background:"#0a0010",borderRadius:8,padding:"6px 10px",fontSize:11,color:"#3aedcc",fontStyle:"italic",marginBottom:10} }, "💡 "+ex.tip),
+    React.createElement("button", { onClick:props.onExpand, style:{background:isOpen?"#0d3b2e":"#0a0010",border:"1px solid #0d3b2e",borderRadius:8,padding:"6px 14px",fontSize:12,color:"#3aedcc",fontWeight:700,cursor:"pointer",width:"100%"} }, isOpen?"▲ Hide How To":"▼ How To"),
+    isOpen && React.createElement("div", { style:{marginTop:10,background:"#0a0010",borderRadius:8,padding:"12px 14px"} },
+      ex.howto.map(function(step,s){ return React.createElement("div",{key:s,style:{display:"flex",gap:10,marginBottom:8}}, React.createElement("span",{style:{color:"#3aedcc",fontWeight:800,fontSize:13,minWidth:20}},(s+1)+"."), React.createElement("span",{style:{color:"#e2e8f0",fontSize:12,lineHeight:1.5}},step)); })
+    )
+  );
+}
 
 function App() {
-  var stateDay = useState(0);
-  var dayIdx = stateDay[0]; var setDayIdx = stateDay[1];
-  var stateChecked = useState({});
-  var checked = stateChecked[0]; var setChecked = stateChecked[1];
-  var stateHome = useState(false);
-  var isHome = stateHome[0]; var setIsHome = stateHome[1];
+  var t = useState(0); var tab = t[0]; var setTab = t[1];
+  var p = useState(0); var phase = p[0]; var setPhase = p[1];
+  var c = useState({}); var checked = c[0]; var setChecked = c[1];
+  var e = useState({}); var expanded = e[0]; var setExpanded = e[1];
 
-  var days = isHome ? homeDays : gymDays;
-  var day = days[dayIdx];
+  var isDay = tab < DAYS.length;
+  var day = isDay ? DAYS[tab] : null;
+  var exs = day ? day.exercises : [];
+  var done = exs.filter(function(_,i){ return !!checked[tab+"-"+phase+"-"+i]; }).length;
+  var pct = exs.length > 0 ? (done/exs.length)*100 : 0;
 
-  function toggle(key) {
-    setChecked(function(p) {
-      var n = Object.assign({}, p);
-      n[key] = !p[key];
-      return n;
-    });
-  }
+  function ck(key){ setChecked(function(prev){ var n=Object.assign({},prev); n[key]=!prev[key]; return n; }); }
+  function ek(key){ setExpanded(function(prev){ var n=Object.assign({},prev); n[key]=!prev[key]; return n; }); }
 
-  var done = day.exercises.filter(function(_, i) { return !!checked[dayIdx + "-" + i]; }).length;
-  var total = day.exercises.length;
-  var pct = (done / total) * 100;
+  return React.createElement("div", { style:{fontFamily:"system-ui,sans-serif",maxWidth:460,margin:"0 auto",padding:16,backgroundColor:"#0a0010",minHeight:"100vh"} },
 
-  return React.createElement("div", { style: { fontFamily: "system-ui, sans-serif", maxWidth: 460, margin: "0 auto", padding: 16, backgroundColor: "#f9fafb", minHeight: "100vh" } },
-
-    React.createElement("div", { style: { background: "linear-gradient(135deg, " + day.color + ", #db2777)", borderRadius: 14, padding: "18px 20px", color: "white", marginBottom: 16 } },
-      React.createElement("div", { style: { fontSize: 22, fontWeight: 800 } }, "👑 Goddess Training"),
-      React.createElement("div", { style: { fontSize: 13, opacity: 0.9, marginTop: 2 } }, "Movement · Strength · Control"),
-      React.createElement("div", { style: { marginTop: 10, background: "rgba(255,255,255,0.25)", borderRadius: 8, height: 8 } },
-        React.createElement("div", { style: { background: "white", borderRadius: 8, height: 8, width: pct + "%", transition: "width 0.3s" } })
-      ),
-      React.createElement("div", { style: { fontSize: 12, opacity: 0.85, marginTop: 4 } }, done + " of " + total + " complete")
-    ),
-
-    React.createElement("div", { style: { display: "flex", background: "white", borderRadius: 10, padding: 4, marginBottom: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.08)" } },
-      React.createElement("button", { onClick: function() { setIsHome(false); setChecked({}); }, style: { flex: 1, padding: 9, borderRadius: 8, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 700, background: !isHome ? "#7c3aed" : "transparent", color: !isHome ? "white" : "#6b7280" } }, "🏋️ Gym Mode"),
-      React.createElement("button", { onClick: function() { setIsHome(true); setChecked({}); }, style: { flex: 1, padding: 9, borderRadius: 8, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 700, background: isHome ? "#7c3aed" : "transparent", color: isHome ? "white" : "#6b7280" } }, "🏠 Home Mode")
-    ),
-
-    React.createElement("div", { style: { marginBottom: 16 } },
-      React.createElement("div", { style: { fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 6, letterSpacing: 1 } }, "DAY"),
-      React.createElement("div", { style: { display: "flex", gap: 6, overflowX: "auto", paddingBottom: 4 } },
-        days.map(function(d, i) {
-          return React.createElement("button", { key: i, onClick: function() { setDayIdx(i); setChecked({}); }, style: { padding: "8px 12px", borderRadius: 8, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 700, whiteSpace: "nowrap", background: dayIdx === i ? d.color : "white", color: dayIdx === i ? "white" : "#374151", boxShadow: dayIdx === i ? "0 2px 8px " + d.color + "55" : "0 1px 3px rgba(0,0,0,0.08)" } }, d.name);
-        })
+    React.createElement("div", { style:{background:"linear-gradient(135deg,#1a4a3a,#3aedcc)",borderRadius:14,padding:"18px 20px",color:"white",marginBottom:16} },
+      React.createElement("div", { style:{fontSize:22,fontWeight:800} }, "👑 Goddess Training"),
+      React.createElement("div", { style:{fontSize:13,opacity:0.9,marginTop:2} }, "Full Body Strength · 5 Days/Week · Built for You"),
+      isDay && React.createElement("div", null,
+        React.createElement("div", { style:{marginTop:10,background:"rgba(255,255,255,0.25)",borderRadius:8,height:8} },
+          React.createElement("div", { style:{background:"white",borderRadius:8,height:8,width:pct+"%",transition:"width 0.3s"} })
+        ),
+        React.createElement("div", { style:{fontSize:12,opacity:0.85,marginTop:4} }, done+" of "+exs.length+" complete"+(done===exs.length&&exs.length>0?" 👑 SESSION DONE!":""))
       )
     ),
 
-    React.createElement("div", { style: { fontSize: 17, fontWeight: 800, color: "#111827", marginBottom: 4 } }, day.emoji + " " + day.name + " - " + day.theme),
-    React.createElement("div", { style: { fontSize: 12, color: "#6b7280", marginBottom: 14 } }, isHome ? "🏠 Home version · Bands & bodyweight only 🎵" : "Put on your favorite playlist and get into it 🎵"),
+    React.createElement("div", { style:{display:"flex",background:"#0d1f1a",borderRadius:10,padding:4,marginBottom:12,gap:4} },
+      DAYS.map(function(d,i){ return React.createElement("button",{key:i,onClick:function(){setTab(i);},style:{flex:1,padding:"8px 2px",borderRadius:8,border:"none",cursor:"pointer",fontSize:10,fontWeight:700,background:tab===i?"#3aedcc":"transparent",color:tab===i?"#0a0010":"#9ca3af"}},d.label); }),
+      React.createElement("button", { onClick:function(){setTab(DAYS.length);}, style:{flex:1,padding:"8px 2px",borderRadius:8,border:"none",cursor:"pointer",fontSize:10,fontWeight:700,background:tab===DAYS.length?"#3aedcc":"transparent",color:tab===DAYS.length?"#0a0010":"#9ca3af"} }, "GUIDE")
+    ),
 
-    day.exercises.map(function(ex, i) {
-      var key = dayIdx + "-" + i;
-      var isDone = !!checked[key];
-      return React.createElement("div", { key: i, onClick: function() { toggle(key); }, style: { background: isDone ? "#f0fdf4" : "white", border: "2px solid " + (isDone ? "#86efac" : day.light), borderRadius: 12, padding: "12px 14px", marginBottom: 10, cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" } },
-        React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start" } },
-          React.createElement("div", { style: { fontWeight: 700, fontSize: 14, color: isDone ? "#16a34a" : "#111827" } }, (isDone ? "✅ " : "") + ex.name),
-          React.createElement("div", { style: { fontSize: 11, color: "#6b7280", textAlign: "right" } }, ex.sets + " sets", React.createElement("br"), ex.reps)
-        ),
-        React.createElement("div", { style: { marginTop: 6, fontSize: 12, color: "#6b7280", fontStyle: "italic" } }, ex.notes)
-      );
-    }),
+    React.createElement("div", { style:{marginBottom:14} },
+      React.createElement("div", { style:{fontSize:11,fontWeight:700,color:"#6b7280",marginBottom:6,letterSpacing:1} }, "PHASE"),
+      React.createElement("div", { style:{display:"flex",gap:8} },
+        ["Weeks 1-4","Weeks 5-8","Weeks 9-12"].map(function(l,i){ return React.createElement("button",{key:i,onClick:function(){setPhase(i);setChecked({});},style:{flex:1,padding:"8px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,background:phase===i?"#3aedcc":"#0d1f1a",color:phase===i?"#0a0010":"#9ca3af"}},l); })
+      )
+    ),
 
-    React.createElement("div", { style: { marginTop: 16, background: "#fdf2f8", borderRadius: 10, padding: "12px 14px", fontSize: 12, color: "#be185d", fontWeight: 600, textAlign: "center" } }, "👑 Consistency builds goddesses. Show up for yourself every week.")
+    isDay && React.createElement("div", null,
+      React.createElement("div", { style:{background:"#0d1f1a",borderRadius:8,padding:"10px 14px",fontSize:12,color:"#3aedcc",marginBottom:14,fontWeight:600} }, day.title+" · "+day.sub),
+      exs.map(function(ex,i){
+        var ckey=tab+"-"+phase+"-"+i, ekey=tab+"-e-"+i;
+        return React.createElement(Card,{key:i,ex:ex,phase:phase,isDone:!!checked[ckey],isOpen:!!expanded[ekey],onCheck:function(){ck(ckey);},onExpand:function(ev){ev.stopPropagation();ek(ekey);}});
+      })
+    ),
+
+    tab===DAYS.length && React.createElement("div", null,
+      React.createElement("div", { style:{fontSize:13,fontWeight:700,color:"#3aedcc",marginBottom:12} }, "Your Goddess Training Blueprint"),
+      TIPS.map(function(t,i){ return React.createElement("div",{key:i,style:{background:"#0d1f1a",border:"1px solid #0d3b2e",borderRadius:12,padding:"12px 14px",marginBottom:10}}, React.createElement("div",{style:{display:"flex",gap:10,alignItems:"flex-start"}}, React.createElement("span",{style:{fontSize:20}},t.emoji), React.createElement("div",null, React.createElement("div",{style:{fontWeight:700,fontSize:13,color:"white",marginBottom:4}},t.title), React.createElement("div",{style:{fontSize:12,color:"#9ca3af",lineHeight:1.5}},t.body)))); }),
+      React.createElement("div", { style:{marginTop:16,background:"#0d1f1a",borderRadius:10,padding:"14px 16px",fontSize:12,color:"#3aedcc",fontWeight:600,textAlign:"center",border:"1px solid #0d3b2e"} }, "👑 Strength is built one session at a time. Show up consistently and become her.")
+    )
   );
 }
 
