@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Goddess Training</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <style>* {box-sizing:border-box;margin:0;padding:0;} body{background:#0a0010;font-family:system-ui,sans-serif;}</style>
@@ -11,6 +12,15 @@
 <div id="root"></div>
 <script>
 var useState = React.useState;
+
+function getInitialTab() {
+  var d = new Date().getDay();
+  if (d === 1) return 0; // MON
+  if (d === 2) return 1; // TUE
+  if (d === 3) return 2; // WED
+  if (d === 4) return 3; // THU
+  return 0; // default MON for Fri/Sat/Sun
+}
 
 var DAYS = [
   { label:"MON", title:"🌀 Hip Mobility & Control", sub:"Machines & cables · Full range of motion", homesub:"Zero equipment · Feet planted · Go slow", exercises:[
@@ -399,7 +409,7 @@ function Card(props) {
 }
 
 function App() {
-  var t = useState(0); var tab = t[0]; var setTab = t[1];
+  var t = useState(getInitialTab); var tab = t[0]; var setTab = t[1];
   var m = useState("gym"); var mode = m[0]; var setMode = m[1];
   var c = useState({}); var checked = c[0]; var setChecked = c[1];
   var e = useState({}); var expanded = e[0]; var setExpanded = e[1];
@@ -443,31 +453,6 @@ function App() {
 }
 
 ReactDOM.render(React.createElement(App, null), document.getElementById("root"));
-  // AUTO-DAY — Goddess Training App
-// Paste just above the closing </script> tag
-
-window.addEventListener("DOMContentLoaded", function () {
-  const dayTabMap = {
-    1: "MON",  // Monday
-    2: "TUE",  // Tuesday
-    3: "WED",  // Wednesday
-    4: "THU",  // Thursday
-    5: "MON",  // Friday — no FRI tab, defaults to MON
-    6: null,   // Saturday — no tab
-    0: null    // Sunday — no tab
-  };
-
-  const today = new Date().getDay();
-  const target = dayTabMap[today];
-  if (!target) return;
-
-  const buttons = document.querySelectorAll("button");
-  buttons.forEach(function (btn) {
-    if (btn.textContent.trim() === target) {
-      btn.click();
-    }
-  });
-});
 </script>
 </body>
 </html>
