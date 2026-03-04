@@ -443,6 +443,31 @@ function App() {
 }
 
 ReactDOM.render(React.createElement(App, null), document.getElementById("root"));
+  // AUTO-DAY — Goddess Training App
+// Paste just above the closing </script> tag
+
+window.addEventListener("DOMContentLoaded", function () {
+  const dayTabMap = {
+    1: "MON",  // Monday
+    2: "TUE",  // Tuesday
+    3: "WED",  // Wednesday
+    4: "THU",  // Thursday
+    5: "MON",  // Friday — no FRI tab, defaults to MON
+    6: null,   // Saturday — no tab
+    0: null    // Sunday — no tab
+  };
+
+  const today = new Date().getDay();
+  const target = dayTabMap[today];
+  if (!target) return;
+
+  const buttons = document.querySelectorAll("button");
+  buttons.forEach(function (btn) {
+    if (btn.textContent.trim() === target) {
+      btn.click();
+    }
+  });
+});
 </script>
 </body>
 </html>
