@@ -13,58 +13,387 @@
 var useState = React.useState;
 
 var DAYS = [
-  { label:"MON", title:"🌀 Hip Isolation & Winding", sub:"Slow control · Feel every movement", homesub:"Zero equipment · Do it anywhere", exercises:[
-    { name:"Standing Hip Circles", area:"Hips & Mobility", emoji:"🌀", sets:"3 × 20 each direction", notes:"Slow and controlled, make them big and deliberate. Upper body stays completely still.", tip:"The bigger and slower the circle, the more you feel the hip flexors release", home:"This IS the at-home version — zero equipment needed. Do it anywhere.", homesets:"3 × 20 each direction", howto:["Stand feet hip-width, hands on waist","Rotate hips in a full wide circle — go slow","Keep shoulders and chest completely still","20 circles one direction, then reverse","Feel the hip socket opening up","Bigger is better — maximize the range"] },
-    { name:"Figure 8 Hip Rolls", area:"Hip Mobility & Control", emoji:"🎵", sets:"3 × 30 seconds", notes:"Draw a figure 8 with your hips. Upper body stays completely still throughout.", tip:"Imagine tracing a figure 8 on the floor — front to side, not just side to side", home:"This IS the at-home version — zero equipment. Just you and your hips.", homesets:"3 × 30 seconds", howto:["Stand feet hip-width, slight knee bend","Shift hips right and forward","Roll through center, shift left and back","Connect into a fluid figure 8 shape","Upper body stays still throughout","Start slow, find the shape before adding speed"] },
-    { name:"Isolated Hip Pops", area:"Hip Isolation", emoji:"💥", sets:"3 × 20 each side", notes:"Pop one hip out at a time, freeze at the top. Isolation — not a full sway.", tip:"Think click not swing — sharp pop then hold, that builds control", home:"This IS the at-home version — zero equipment. Focus on the sharp isolation.", homesets:"3 × 20 each side", howto:["Stand feet together or hip-width","Pop RIGHT hip out sharply — freeze at the top","Return to center","Pop LEFT hip out sharply — freeze","Keep upper body absolutely still","Each pop is intentional and sharp, not a swing"] },
-    { name:"Kneeling Hip Winds", area:"Hip Control & Core", emoji:"🧎", sets:"3 × 30 seconds", notes:"On knees, wind hips in slow circles. Kneeling isolates the movement beautifully.", tip:"Kneeling removes leg momentum — everything comes purely from the hip", home:"Use a yoga mat or folded towel under knees. Zero other equipment needed.", homesets:"3 × 30 seconds", howto:["Kneel upright, knees hip-width","Place hands on thighs or waist","Wind hips in slow full circles","Keep torso tall and still","Focus on rotating from the hip joint","30 seconds, then switch direction"] },
-    { name:"Pelvic Tilts", area:"Core & Hip Foundation", emoji:"🔄", sets:"3 × 15", notes:"Standing, tuck and release pelvis — this is your base movement for everything else.", tip:"Master this and all hip movement opens up — it is the foundation", home:"This IS the at-home version — zero equipment. The foundation of everything.", homesets:"3 × 15", howto:["Stand feet hip-width, slight knee bend","Tuck pelvis forward — feel lower abs engage","Release and arch slightly back — lower back opens","Move slowly between the two positions","Keep movement isolated to the pelvis only","15 reps, breathe through each one"] },
-    { name:"Deep Butterfly Stretch", area:"Inner Thighs & Hips", emoji:"🦋", sets:"2 × 60 sec hold", notes:"Sit tall, press knees toward floor gently. Breathe into the stretch — never force.", tip:"Sit on a folded blanket if hips are tight — elevation helps knees drop naturally", home:"Sit on the floor anywhere. Use a pillow under hips if needed.", homesets:"2 × 60 sec hold", howto:["Sit on floor, soles of feet together","Sit TALL — do not let back round","Gently press knees toward floor with elbows","Hold and breathe deeply — relax into it","Each exhale, let knees drop a little further","Never force — this is a patience stretch"] }
+  { label:"MON", title:"🌀 Hip Mobility & Control", sub:"Machines & cables · Full range of motion", homesub:"Zero equipment · Feet planted · Go slow", exercises:[
+    {
+      name:"Cable Hip Circle", area:"Hip Mobility & Control", emoji:"🌀",
+      sets:"3 × 15 each direction", notes:"Attach ankle cuff to low cable. Stand sideways, swing leg in slow controlled circles. This is hip mobility work with resistance — not a kick.", tip:"Go slow — fast circles lose the mobility benefit. The cable adds just enough resistance to feel every inch of the range.",
+      howto:["Attach ankle cuff to the low cable pulley","Stand sideways to the machine, hand lightly on the machine for balance","Attach cuff to the outside ankle — the one away from the machine","Slowly swing your leg forward in a circle — up, around to the side, back, and down","Make the circle as wide as comfortable","15 circles forward, then turn around and do 15 backward","Keep your standing leg slightly bent","Upper body stays still — only the working leg moves"],
+      mod:"Cable not available? Do standing hip circles with no weight — same motion, same benefit.",
+      feel:"You should feel your hip joint opening up and your hip flexors and glutes both engaging through the circle.",
+      gymsets:"3 × 15 each direction",
+      homeex:"Standing Hip Circles", homesets:"3 × 20 each direction",
+      homenotes:"Feet planted the whole time. Upper body stays completely still. Make the circles big and slow.",
+      hometip:"The bigger and slower the circle, the more you feel the hip joint opening up",
+      howtoHome:["Stand with feet shoulder-width apart, slight bend in both knees","Place both hands on your hips","Feet stay flat and planted — they do not move at all","Slowly push hips forward, roll to the right, push back, roll to the left — one full circle","Make each circle slow — about 3 to 4 seconds per circle","20 circles one direction, then reverse","Keep shoulders and chest completely still throughout"],
+      modHome:"Struggling with balance? Hold onto a wall or chair with one hand.",
+      feelHome:"You should feel this in your hip joints and outer hips. If you feel it in your lower back, make the circles smaller."
+    },
+    {
+      name:"Cable Pull-Through", area:"Hip Hinge & Glutes", emoji:"🔗",
+      sets:"3 × 15 reps", notes:"Low cable between legs, hinge forward and drive hips back through. This teaches the hip hinge pattern that powers all glute work.", tip:"Think of it as pushing the wall behind you with your hips — not squatting down",
+      howto:["Set cable to the lowest position, attach a rope handle","Stand facing away from the machine, feet shoulder-width apart","Reach back between your legs and grab the rope with both hands","Stand far enough away that there is tension in the cable","Hinge forward at your hips — push them back — cable pulls between your legs","At the bottom, feel the stretch in your hamstrings","Drive your hips FORWARD to standing — squeeze glutes hard at the top","That is one rep — hinge back, drive forward","Keep your back flat throughout — never round"],
+      mod:"New to this movement? Practice the hip hinge first with no weight — hands on thighs, push hips back to a wall behind you.",
+      feel:"You should feel this in your glutes and hamstrings — especially the squeeze at the top. If you feel it in your lower back your hips are not hinging, you are bending.",
+      gymsets:"3 × 15 reps",
+      homeex:"Slow Pelvic Wave", homesets:"3 × 10 slow waves",
+      homenotes:"Slow front-to-back pelvis roll. Connects all your hip movements together. Feet stay planted.",
+      hometip:"Think of drawing a slow oval with your hips — small is fine, control matters more than size",
+      howtoHome:["Stand with feet hip-width apart, knees soft, hands on hips","Slowly tuck your pelvis forward and under","Let hips rise slightly as you complete the tuck","Slowly release and let hips push gently back","Return to neutral — that is one wave","Make it slow and flowing — not four separate jerky movements"],
+      modHome:"Struggling to connect the movements? Do just the pelvic tilt first for a week, then slowly add the wave.",
+      feelHome:"You should feel this flow through your whole lower body — abs, hips, and glutes all gently engaged."
+    },
+    {
+      name:"Dumbbell Romanian Deadlift", area:"Hamstrings, Glutes & Hip Hinge", emoji:"🏋️",
+      sets:"3 × 12 reps", notes:"Dumbbells in hands, hinge forward keeping back flat, feel the hamstring stretch, drive back up. The fundamental hip hinge with weight.", tip:"Lower back stays completely flat — if it rounds, the weight is too heavy or you have gone too far",
+      howto:["Hold a dumbbell in each hand, standing with feet hip-width apart","Soft bend in both knees — they stay at this angle throughout","Hinge forward from your hips — push them back as you lower","Let the dumbbells travel close to your legs on the way down","Lower until you feel a stretch in your hamstrings — usually just below the knee","Keep your back completely flat — chest stays open, not rounded","Drive your hips forward to return to standing","Squeeze glutes firmly at the top","That is one rep"],
+      mod:"Struggling with back flatness? Reduce the range of motion — only hinge as far as you can with a perfectly flat back.",
+      feel:"You should feel a deep stretch in your hamstrings on the way down and your glutes contracting hard at the top.",
+      gymsets:"3 × 12 reps",
+      homeex:"Pelvic Tilts", homesets:"3 × 15 reps",
+      homenotes:"Standing, tuck and release pelvis slowly. This is the foundation movement — everything else builds from this.",
+      hometip:"Master this and all hip movement opens up — it truly is the foundation of everything",
+      howtoHome:["Stand feet hip-width apart, slight bend in both knees","Place both hands on your hips","Slowly tuck your pelvis under — like tucking your tailbone toward the floor","Feel your lower abs engage","Hold the tuck for 1 second","Slowly release back to neutral","That is one rep — tuck, hold, release — never rush"],
+      modHome:"Struggling to feel it? Try lying on your back with knees bent and press your lower back into the floor — same movement, easier to feel.",
+      feelHome:"You should feel your lower abs engage when you tuck. This is your deep core activating."
+    },
+    {
+      name:"Hip Abductor Machine", area:"Glute Medius & Hip Dips", emoji:"🦵",
+      sets:"3 × 20 reps", notes:"Seated abductor machine — push legs apart against resistance. One of the best hip dip filling exercises in the gym.", tip:"Control the return — do not let the machine slam your legs back in. The slow return is half the exercise.",
+      howto:["Sit in the hip abductor machine, adjust so knees and thighs are supported","Set a weight you can control for 20 reps — not too heavy","Sit tall — back straight, not slouched","Slowly push both legs APART against the pads","Push as wide as the machine allows — hold for 1 second","Slowly return legs to starting position — take 2 to 3 seconds","Do not let the weight stack drop — control every inch","20 slow controlled reps per set"],
+      mod:"Machine feels uncomfortable? Try the cable hip abduction standing instead — ankle cuff on low cable, stand sideways, lift leg out to side.",
+      feel:"You should feel this in your outer glutes — the side of your butt. This is the glute medius that fills hip dips.",
+      gymsets:"3 × 20 reps",
+      homeex:"Standing Hip Drop", homesets:"3 × 20 reps (10 each side)",
+      homenotes:"Stand tall, drop one hip down at a time — slow and controlled. Feet stay planted the entire time.",
+      hometip:"This is a DROP not a sway — let one hip fall toward the floor while the other stays up",
+      howtoHome:["Stand with feet shoulder-width apart, soft bend in knees, hands on hips","Slowly drop your RIGHT hip down toward the floor","Your right knee bends slightly — that is normal","Hold the drop for 1 second, return to center","Drop your LEFT hip down, hold 1 second, return","Alternate sides slowly — right, center, left, center"],
+      modHome:"Struggling with balance? Stand next to a wall and lightly touch it with one hand.",
+      feelHome:"You should feel this in your outer hips and the sides of your waist."
+    },
+    {
+      name:"Kneeling Hip Winds", area:"Hip Control & Core", emoji:"🧎",
+      sets:"3 × 30 seconds each direction", notes:"On knees, wind hips in slow full circles. Kneeling removes leg momentum so everything comes purely from the hip joint. Do this on a mat at the gym.", tip:"Slow hula hoop from your knees — push forward, sweep side, push back, sweep other side",
+      howto:["Grab a mat and kneel upright, knees hip-width apart","Place both hands on your thighs or waist — not on the floor","Keep your torso completely tall and still","Slowly push hips forward, sweep to the right, push back, sweep to the left — one full circle","One full circle should take about 3 to 4 seconds — go slow","30 seconds one direction, then switch and reverse"],
+      mod:"Struggling to balance kneeling? Sit on the edge of a gym bench and do the same circular hip motion seated.",
+      feel:"You should feel this in your hip joints and deep core. NOT in your lower back — if you do, make the circles smaller.",
+      gymsets:"3 × 30 seconds each direction",
+      homeex:"Kneeling Hip Winds", homesets:"3 × 30 seconds each direction",
+      homenotes:"Same exercise at home — use a yoga mat or folded towel under knees for comfort.",
+      hometip:"Kneeling removes leg momentum — everything comes purely from the hip",
+      howtoHome:["Kneel upright on your mat, knees hip-width apart","Place both hands on your thighs or waist","Keep torso tall and completely still","Slowly push hips forward, sweep right, push back, sweep left — one full circle","Go slow — 3 to 4 seconds per circle","30 seconds one direction, then reverse"],
+      modHome:"Struggling to balance? Sit on the edge of a sturdy chair and do the same circular hip motion seated.",
+      feelHome:"You should feel this in your hip joints and deep core. Not in your lower back."
+    },
+    {
+      name:"Deep Butterfly Stretch", area:"Inner Thighs & Hips", emoji:"🦋",
+      sets:"2 × 60 sec hold", notes:"Finish the day with this. Sit tall, press knees gently toward floor. Breathe into the stretch — never force it.", tip:"Sit on a folded mat if hips are tight — elevation helps knees drop naturally",
+      howto:["Sit on a mat on the gym floor","Bring soles of feet together so knees fall out to the sides","Sit up as TALL as possible","Gently press knees toward the floor with your elbows — never force","Breathe in deeply, and as you breathe out let your knees relax a little lower","Hold for 60 seconds — let gravity do the work","To get up: bring knees together first, then roll to one side and push up"],
+      mod:"Struggling to sit on the floor? Sit on the edge of a bench, cross one ankle over the opposite knee, and sit tall — same stretch.",
+      feel:"You should feel a gentle stretch in your inner thighs and groin. Never sharp pain.",
+      gymsets:"2 × 60 sec hold",
+      homeex:"Deep Butterfly Stretch", homesets:"2 × 60 sec hold",
+      homenotes:"Sit tall, press knees toward floor gently. Breathe into the stretch — never force.",
+      hometip:"Sit on a folded blanket if hips are tight — elevation helps knees drop naturally",
+      howtoHome:["Sit on your mat, soles of feet together, knees falling out","Sit up as tall as possible","Gently press knees toward floor with elbows","Breathe deeply — each exhale let knees relax lower","Hold 60 seconds — never force"],
+      modHome:"Struggling to sit on the floor? Sit on the edge of a chair, cross one ankle over the opposite knee, sit tall.",
+      feelHome:"You should feel a gentle stretch in your inner thighs and groin."
+    }
   ]},
-  { label:"TUE", title:"🔥 Twerk & Bounce Control", sub:"Rhythm and power · Feel the music", homesub:"Add band above knees for extra burn", exercises:[
-    { name:"Sumo Squat Pulses", area:"Glutes & Inner Thighs", emoji:"🔥", sets:"3 × 30 pulses", notes:"Stay low in the squat the entire time. Small fast bounces — feel the burn build.", tip:"The lower you stay, the more you get — do not rise up between pulses", home:"Add resistance band above knees for extra inner thigh and glute burn. Same movement.", homesets:"3 × 30 pulses", howto:["Feet wide, toes pointed out 45 degrees","Lower into sumo squat — stay there","Pulse up and down SMALL from that position","Range of motion is only 2-3 inches","Stay in the burn — do not stand up","30 continuous pulses, then rest"] },
-    { name:"Donkey Kick Bounce", area:"Glutes — Control & Power", emoji:"🦶", sets:"3 × 20 each leg", notes:"On all fours, kick up and add a small bounce at the top. Activates fast-twitch glute fibers.", tip:"Squeeze at the top then add the bounce — do not just flap the leg", home:"Loop band around ankle, anchor under hands for resistance. Add ankle weights when you get them.", homesets:"3 × 20 each leg", howto:["On all fours, wrists under shoulders","Kick one leg up, sole facing ceiling","At the TOP — add a small controlled bounce","Squeeze glute with each bounce","Keep hips square — do not rotate","20 per leg, then switch"] },
-    { name:"Twerk Squat", area:"Glutes — Independence & Control", emoji:"💃", sets:"3 × 20", notes:"Squat position, arch back, bounce glutes independently. This is skill work — take your time.", tip:"Arch your lower back — that is what allows glutes to move independently", home:"Zero equipment. Add band above knees for more resistance if you want.", homesets:"3 × 20", howto:["Feet wider than shoulder-width, slight squat","Arch lower back — stick butt out","Bounce glutes up and down keeping back arched","Upper body stays still — glutes move independently","Start slow to find the movement","Speed up once you feel the isolation"] },
-    { name:"Pop Squats", area:"Glutes & Cardio Power", emoji:"⚡", sets:"3 × 15", notes:"Jump feet out to squat, jump back in — explosive and rhythmic.", tip:"Land soft every time — quiet feet means absorbing through muscle not joints", home:"Zero equipment needed. Clear a small space and go.", homesets:"3 × 15", howto:["Start with feet together","Jump feet out wide, land in squat position","Immediately jump feet back together","Keep the rhythm — feel the music","Soft landings every single time","15 reps equals 15 jumps out and in"] },
-    { name:"Standing Booty Pop", area:"Glutes — Isolation", emoji:"🍑", sets:"3 × 30 seconds", notes:"Feet hip width, slight bend, pop glutes back alternating sides. Sharp and rhythmic.", tip:"It is a POP not a sway — sharp and intentional, one side at a time", home:"Zero equipment. Put on a song and feel the rhythm.", homesets:"3 × 30 seconds", howto:["Stand feet hip-width, soft knee bend","Pop RIGHT glute back — sharp and isolated","Return to center","Pop LEFT glute back — sharp","Alternate rhythmically","Arms can move naturally — find your flow"] },
-    { name:"Hip Flexor Stretch", area:"Hip Flexors — Recovery", emoji:"🧘", sets:"2 × 60 sec each side", notes:"Low lunge, sink hips forward and down. Essential after all the bounce work.", tip:"Squeeze the BACK glute while you sink — deepens the hip flexor stretch dramatically", home:"Zero equipment. Use a mat or folded towel under back knee.", homesets:"2 × 60 sec each side", howto:["Step into a low lunge","Back knee on the floor, front foot flat","Sink hips FORWARD and DOWN","Squeeze back glute to increase the stretch","Hold and breathe — do not bounce","60 seconds, then switch sides"] }
+  { label:"TUE", title:"🔥 Glute & Hip Control", sub:"Cables & machines · Real resistance", homesub:"Slow isolation · Feet stay planted", exercises:[
+    {
+      name:"Cable Kickback", area:"Glutes — Isolation & Control", emoji:"🍑",
+      sets:"3 × 15 each leg", notes:"Ankle cuff on low cable, face the machine, kick one leg back and squeeze at the top. Best cable exercise for glute isolation.", tip:"Squeeze hard at the top and hold for 1 second — that contraction is where the glute work happens",
+      howto:["Attach ankle cuff to low cable, strap onto one ankle","Face the cable machine, hold the frame lightly with both hands for balance","Stand on your non-working leg, soft bend in the knee","Slowly kick your working leg BACK — keep it straight or slight bend","Squeeze your glute hard at the top — hold 1 second","Slowly return the leg forward — control the return, do not swing","15 reps on one leg, then switch","Keep your upper body still — do not lean or twist"],
+      mod:"Struggling with balance? Stand closer to the machine and hold more firmly while you build the balance.",
+      feel:"You should feel this directly in the glute of the working leg — especially at the top when you squeeze.",
+      gymsets:"3 × 15 each leg",
+      homeex:"Slow Booty Pop Hold", homesets:"3 × 10 reps",
+      homenotes:"Push hips back slowly, hold for 2 seconds, return. Feet stay planted. Control work — not speed.",
+      hometip:"The HOLD is the whole point — slow and held builds the muscle control you need",
+      howtoHome:["Stand feet shoulder-width, toes slightly out, soft knee bend","Place hands on thighs or hold a chair back","Slowly push hips BACK like sitting in a chair — stop halfway","Hold for 2 full seconds, gently squeeze glutes","Slowly return to standing — do not snap up","Give glutes a gentle squeeze at the top"],
+      modHome:"Struggling with balance? Hold onto the back of a sturdy chair with both hands the entire time.",
+      feelHome:"You should feel this in your glutes and the back of your thighs."
+    },
+    {
+      name:"Cable Hip Abduction", area:"Glute Medius — Hip Dip Filler", emoji:"↗️",
+      sets:"3 × 15 each leg", notes:"Ankle cuff on low cable, stand sideways to machine, lift leg out to the side against resistance. Directly targets the muscle that fills hip dips.", tip:"Do not let your hip hike up as you lift — keep hips level and let the leg do all the work",
+      howto:["Attach ankle cuff to low cable, strap onto the ankle furthest from the machine","Stand sideways to the machine, hand lightly on it for balance","Stand on the leg closest to the machine, soft knee bend","Slowly lift the working leg out to the side — keep it straight","Lift only as high as your hip stays level — do not let it hike","Hold at the top for 1 second","Slowly lower back down — take 2 to 3 seconds","15 reps, then turn around and switch legs"],
+      mod:"Hip keeps hiking? Reduce the height of your lift — even a small controlled lift is better than a big sloppy one.",
+      feel:"You should feel this in the outer glute of the working leg — the side of your butt. This is the hip dip muscle.",
+      gymsets:"3 × 15 each leg",
+      homeex:"Standing Side Leg Raise", homesets:"3 × 15 each side",
+      homenotes:"Stand tall, lift one leg out to the side slowly, lower slowly. Add ankle weight if you have one.",
+      hometip:"The LOWERING phase is just as important as the lifting — resist gravity on the way down",
+      howtoHome:["Put on ankle weight if using one. Stand next to a wall or chair for balance","Keep working leg straight, toes pointing forward","Slowly lift leg out to the SIDE — only as high as hip stays level","Pause at top for 1 second","Slowly lower back down — take 2 to 3 seconds","Complete all reps one side then switch"],
+      modHome:"No ankle weight? Bodyweight alone is effective. Add weight only when 15 reps feels easy.",
+      feelHome:"You should feel this in the outer hip and side of your glute."
+    },
+    {
+      name:"Dumbbell Sumo Squat", area:"Inner Thighs & Glutes", emoji:"🏋️",
+      sets:"3 × 15 reps", notes:"Hold one heavy dumbbell at chest, feet wide, toes out — squat deep. Much more effective than bodyweight for inner thigh and glute development.", tip:"Push your knees OUT toward your toes as you lower — this opens the inner thighs and protects the knees",
+      howto:["Hold one dumbbell vertically at your chest with both hands","Stand with feet wider than shoulder-width, toes pointed out at 45 degrees","Sit your hips back and DOWN into the squat","Push knees out toward your toes — do not let them cave in","Lower until thighs are as close to parallel to the floor as comfortable","Drive through your heels to stand back up","Squeeze glutes at the top","15 controlled reps"],
+      mod:"Struggling with depth? Hold onto a squat rack with one hand to help you sit lower with control.",
+      feel:"You should feel your inner thighs and glutes both working. If you only feel your quads, sit your hips further back.",
+      gymsets:"3 × 15 reps",
+      homeex:"Sumo Squat Hold with Pulse", homesets:"3 × 30 sec hold + 10 pulses",
+      homenotes:"Wide stance squat, hold at the bottom, then small pulses. Feet stay planted in wide position.",
+      hometip:"The wider your feet, the more inner thigh you feel. The lower you sit, the more glute you feel.",
+      howtoHome:["Feet wider than shoulder-width, toes out at 45 degrees","Slowly lower into a squat — push knees toward toes","Hold position for 30 seconds — breathe steadily","After hold, do 10 small pulses — lower an inch, rise an inch","Stand back up slowly after pulses","Rest 30 seconds between sets"],
+      modHome:"Struggling to hold? Use a chair behind you — lower as if sitting, stop just before sitting, hold there.",
+      feelHome:"Inner thighs burning during hold, glutes burning during pulses."
+    },
+    {
+      name:"Cable Hip Extension", area:"Glutes & Hip Drive", emoji:"🔗",
+      sets:"3 × 15 each leg", notes:"Ankle cuff on low cable, face machine, drive leg straight back and down. Builds the glute strength behind all hip movement.", tip:"At full extension squeeze your glute like you are trying to crack a walnut — that peak contraction is the whole exercise",
+      howto:["Attach ankle cuff to low cable, strap to one ankle","Face the machine, hold the frame lightly with both hands","Stand on non-working leg, slight knee bend","From neutral standing, slowly drive your working leg BACK and DOWN","Keep leg fairly straight — slight bend is fine","At full extension, squeeze glute HARD — hold 1 second","Slowly return leg to neutral — do not swing forward","15 reps, then switch legs","Keep hips square — do not rotate your body to get more range"],
+      mod:"Feeling it in your lower back instead of glute? Reduce the range — only go as far back as you can without your back arching.",
+      feel:"You should feel this deep in the glute of the working leg at the back of the movement. Back should feel nothing.",
+      gymsets:"3 × 15 each leg",
+      homeex:"Wall-Supported Hip Isolation", homesets:"3 × 30 seconds each direction",
+      homenotes:"Hands lightly on wall, move hips side to side without moving upper body. The wall keeps you honest.",
+      hometip:"If your shoulders move, you are doing it wrong — the wall will show you immediately",
+      howtoHome:["Stand facing a wall arm's length away, hands lightly on wall at shoulder height","Feet shoulder-width, slight knee bend","Slowly push hips to the RIGHT — just hips, nothing else","Return to center, push hips to the LEFT","Find slow steady rhythm — right, center, left, center","30 seconds then do slow circles"],
+      modHome:"No wall? Use the back of a sturdy chair instead.",
+      feelHome:"You should feel the work in your outer hips and obliques. Upper body should feel relaxed."
+    },
+    {
+      name:"Leg Press — Wide High Foot Placement", area:"Glutes & Inner Thighs", emoji:"🦵",
+      sets:"3 × 15 reps", notes:"On the leg press machine, place feet HIGH and WIDE on the platform. This shifts the work from quads to glutes and inner thighs entirely.", tip:"High and wide on the plate is the goddess placement — it changes the entire muscle focus of the leg press",
+      howto:["Sit in the leg press machine","Place feet HIGH on the platform — upper half of the platform","Place feet WIDE — outside edges of the platform, toes pointed slightly out","This is very different from a normal leg press foot position","Slowly lower the platform toward you — bend knees to about 90 degrees","Push through your HEELS to press back up — not your toes","Squeeze glutes at full extension — do not lock knees","15 controlled reps"],
+      mod:"New to this foot placement? Start with lighter weight than usual — the position changes how it feels significantly.",
+      feel:"You should feel this in your glutes and inner thighs — very different from a regular leg press. If you only feel quads, move feet higher and wider.",
+      gymsets:"3 × 15 reps",
+      homeex:"Pelvic Wave", homesets:"3 × 10 slow waves",
+      homenotes:"Slow front-to-back pelvis roll. Connects all your hip movements together. Feet stay planted.",
+      hometip:"Think of drawing a slow oval with your hips — small is fine, control matters more than size",
+      howtoHome:["Stand feet hip-width, knees soft, hands on hips","Slowly tuck pelvis forward and under","Let hips rise slightly, then slowly release back","Return to neutral — that is one wave","Make it slow and flowing — not jerky"],
+      modHome:"Struggling to connect movements? Do just the pelvic tilt for a week first.",
+      feelHome:"You should feel this flow through your whole lower body — abs, hips, and glutes gently engaged."
+    },
+    {
+      name:"Hip Flexor Stretch", area:"Hip Flexors — Recovery", emoji:"🧘",
+      sets:"2 × 60 sec each side", notes:"Low lunge on a mat, sink hips forward and down. Essential recovery stretch after all the cable and machine work.", tip:"Squeeze the BACK glute while you sink forward — this deepens the hip flexor stretch dramatically",
+      howto:["Grab a mat and kneel on your RIGHT knee","Step your LEFT foot forward, left knee over left ankle","Place hands on your left thigh for support","Sit up tall — torso upright","Gently tuck your tailbone — you will immediately feel a stretch in the front of your right hip","Hold and breathe — the tuck creates the stretch, not leaning forward","60 seconds, then switch sides"],
+      mod:"Struggling to kneel on hard gym floor? Double up the mat under your knee.",
+      feel:"You should feel the stretch in the front of the hip of your back leg. That is your hip flexor releasing after all the glute work.",
+      gymsets:"2 × 60 sec each side",
+      homeex:"Hip Flexor Stretch", homesets:"2 × 60 sec each side",
+      homenotes:"Same exercise at home. Use a mat or folded towel under back knee for comfort.",
+      hometip:"Squeeze the BACK glute while you sink — deepens the stretch dramatically",
+      howtoHome:["Kneel on RIGHT knee on mat","Step LEFT foot forward, knee over ankle","Sit tall, gently tuck tailbone","Hold 60 seconds — breathe steadily","Switch sides"],
+      modHome:"Struggling to kneel? Stand in a lunge instead — step one foot forward, stay upright, tuck tailbone.",
+      feelHome:"You should feel the stretch in the front of the hip of your back leg."
+    }
   ]},
-  { label:"WED", title:"💪 Core Stamina", sub:"Deep core · Slow and controlled", homesub:"Bodyweight only · Zero equipment", exercises:[
-    { name:"Dead Bug", area:"Deep Core — Stability", emoji:"🐛", sets:"3 × 10 each side", notes:"Lower back stays pressed to floor the whole time — no exceptions. Slow is the point.", tip:"If your lower back lifts even slightly, make the movement smaller — range is earned", home:"This IS the at-home version — bodyweight on the floor. Perfect home exercise.", homesets:"3 × 10 each side", howto:["Lie on back, arms straight up, knees bent 90 degrees in air","Press lower back FIRMLY into floor","Slowly lower opposite arm and leg toward floor","Lower back must not lift — that is the rule","Return slowly, repeat other side","Slow is the point — do not rush this"] },
-    { name:"Hollow Body Hold", area:"Full Core — Endurance", emoji:"🌙", sets:"3 × 20-30 sec hold", notes:"Arms overhead, legs extended, lower back flat — breathe through it. Do not hold your breath.", tip:"Pull your belly button through the floor — that cue locks in the hollow position", home:"Zero equipment. One of the best core holds you can do at home.", homesets:"3 × 20-30 sec hold", howto:["Lie on back, press lower back into floor","Extend arms overhead, extend legs out","Lift arms, head, shoulders and legs slightly","Lower back stays GLUED to the floor","Hold and breathe — do not quit early","Bend knees slightly to modify if needed"] },
-    { name:"Slow Mountain Climbers", area:"Core & Hip Flexors", emoji:"🏔️", sets:"3 × 20 each leg", notes:"3 seconds each rep — this is deep core work, not cardio. Slow kills the rep.", tip:"The slower you go, the more your transverse abdominis fires — speed loses the benefit", home:"Zero equipment. Just needs floor space.", homesets:"3 × 20 each leg", howto:["Start in plank, wrists under shoulders","Slowly drive one knee toward chest — 3 full seconds","Hold briefly at chest","Slowly extend back to plank — 3 full seconds","Switch legs","Keep hips level — do not rock side to side"] },
-    { name:"Hip Dip Plank", area:"Obliques & Waist", emoji:"↔️", sets:"3 × 15 each side", notes:"Side plank, dip hip to floor and back up. This is what builds waist definition.", tip:"Slow and controlled — momentum does not build the waist, control does", home:"Zero equipment. Great for waist definition at home.", homesets:"3 × 15 each side", howto:["Get into side plank — elbow under shoulder","Body in a straight line, hips stacked","Lower hip toward floor slowly","Drive hip back UP squeezing obliques","Top hand on hip or reaching toward ceiling","15 dips, then flip to other side"] },
-    { name:"Reverse Crunch", area:"Lower Abs", emoji:"🔄", sets:"3 × 15", notes:"Lift hips off floor using lower abs, not momentum. Slow and intentional every rep.", tip:"If you feel it in hip flexors more than abs, slow down even more", home:"Zero equipment. Control every inch of the movement.", homesets:"3 × 15", howto:["Lie on back, legs raised, knees slightly bent","Press lower back into floor","Using LOWER ABS, curl hips up off the floor","Knees move toward chest as hips lift","Lower slowly — do not just drop","Control every inch of the movement"] },
-    { name:"Seated Twist Hold", area:"Obliques & Deep Core", emoji:"🌀", sets:"2 × 30 sec each side", notes:"Seated, lean back slightly, twist and hold. Feel it immediately in your obliques.", tip:"The lean-back is what activates the core — sit straight and you lose the benefit", home:"Zero equipment. Sit on the floor or a mat.", homesets:"2 × 30 sec each side", howto:["Sit on floor, knees bent, feet flat","Lean back slightly — feel abs engage","Clasp hands at chest or extend arms","Rotate torso to one side and hold","Hold for 30 seconds — breathe","Switch sides — stay leaned back the whole time"] }
+  { label:"WED", title:"💪 Core Stamina", sub:"Cables & weight · Deep core with resistance", homesub:"Bodyweight only · Zero equipment", exercises:[
+    {
+      name:"Cable Crunch", area:"Abs — Full Core", emoji:"🔗",
+      sets:"3 × 15 reps", notes:"Kneel facing cable machine, rope attachment overhead, crunch down contracting abs. Far more effective than floor crunches for building core strength.", tip:"Pull DOWN with your abs — not your arms or neck. Think about bringing your rib cage to your hips.",
+      howto:["Set cable to high position, attach rope handle","Kneel facing the machine, grab rope with both hands at the sides of your head","Elbows stay bent throughout — they do not move","Brace your core, then crunch DOWN — bring rib cage toward hips","You should feel your abs contract hard at the bottom","Hold the bottom for 1 second","Slowly return to upright — do not let the weight yank you up","15 controlled reps"],
+      mod:"Feeling it in your neck? Hold the rope at your forehead — that removes neck involvement.",
+      feel:"You should feel this in your abs — the full front of your core. If you feel it in your arms or neck, reduce weight.",
+      gymsets:"3 × 15 reps",
+      homeex:"Dead Bug", homesets:"3 × 10 each side",
+      homenotes:"Lower back stays pressed to floor the entire time. Slow is the point.",
+      hometip:"If your lower back lifts even slightly, make the movement smaller — range is earned over time",
+      howtoHome:["Lie on back, arms straight up, knees bent 90 degrees in air","Press lower back FIRMLY into floor","Slowly lower opposite arm and leg toward floor","Go only as far as lower back stays flat","Return slowly, repeat other side"],
+      modHome:"Struggling? Do just the arm movement with no leg movement first.",
+      feelHome:"You should feel your deep abs working to keep your back on the floor."
+    },
+    {
+      name:"Cable Woodchop", area:"Obliques & Rotational Core", emoji:"🪓",
+      sets:"3 × 12 each side", notes:"Cable set to high position, pull diagonally down and across your body. Best oblique exercise in the gym — builds the waist definition you cannot get from crunches.", tip:"The rotation comes from your core — not your arms. Think of your arms as just holding the cable while your torso does the work.",
+      howto:["Set cable to high position, single handle attachment","Stand sideways to the machine, feet shoulder-width","Grab handle with both hands — arms extended","Start with handle near the machine side of your head","Pull the handle diagonally DOWN and ACROSS your body — toward the opposite hip","Rotate through your torso — that rotation is the exercise","Control the return — do not let the cable yank you back","12 reps, then turn around and repeat on the other side"],
+      mod:"New to this movement? Use a light weight and practice the rotation slowly before adding resistance.",
+      feel:"You should feel this in your obliques — the sides of your core — and through your entire trunk as you rotate.",
+      gymsets:"3 × 12 each side",
+      homeex:"Seated Twist Hold", homesets:"2 × 30 sec each side",
+      homenotes:"Seated, lean back slightly, twist and hold. You will feel your obliques immediately.",
+      hometip:"The lean-back is what activates the core — sit straight and you lose most of the benefit",
+      howtoHome:["Sit on floor, knees bent, feet flat","Lean back slightly until abs engage","Clasp hands at chest height","Rotate torso to one side and hold 30 seconds","Switch sides — stay leaned back throughout"],
+      modHome:"Back discomfort? Reduce the lean — even a slight lean back engages the core.",
+      feelHome:"You should feel this immediately in your obliques — the sides of your core."
+    },
+    {
+      name:"Cable Oblique Pull", area:"Obliques & Waist", emoji:"↔️",
+      sets:"3 × 15 each side", notes:"Cable set to low position, stand sideways, pull straight up alongside your body. Isolates the oblique in a way crunches cannot reach.", tip:"Keep the movement alongside your body — not in front of it. That keeps the oblique doing the work.",
+      howto:["Set cable to low position, single handle","Stand sideways to the machine, feet shoulder-width","Grab handle with the hand closest to the machine","Let your body side-bend slightly toward the machine — you will feel the stretch on the far side","Pull the handle straight UP alongside your body","Crunch your oblique — bring your ribs toward your hip on the working side","Hold the top for 1 second","Lower slowly","15 reps, then switch sides"],
+      mod:"Feeling it in your shoulder? Make sure you are pulling alongside your body, not in front of it — and reduce the weight.",
+      feel:"You should feel this in the side of your waist — the oblique on the working side. That is the muscle that creates waist definition.",
+      gymsets:"3 × 15 each side",
+      homeex:"Hip Dip Plank", homesets:"3 × 15 each side",
+      homenotes:"Side plank, dip hip toward floor and drive back up. Builds waist definition.",
+      hometip:"Slow and controlled — momentum does not build the waist, control does",
+      howtoHome:["Side plank — elbow under shoulder, body in straight line","Slowly lower bottom hip toward floor","Drive hip back UP squeezing obliques","15 dips then flip to other side"],
+      modHome:"Struggling to hold side plank? Drop bottom knee to the floor for support.",
+      feelHome:"You should feel this in the side of your waist on the working side."
+    },
+    {
+      name:"Weighted Dead Bug", area:"Deep Core — Stability", emoji:"🐛",
+      sets:"3 × 10 each side", notes:"Same as the bodyweight dead bug but hold a light dumbbell in each hand reaching overhead. Adds challenge to the deep core without stressing the spine.", tip:"The lower back rule is the same — if it lifts off the floor even slightly, the weight is too heavy",
+      howto:["Lie on your back, hold a light dumbbell in each hand","Arms reaching straight up toward the ceiling with dumbbells","Bend both knees to 90 degrees with legs lifted like a tabletop","Press your lower back FIRMLY into the floor","Breathe out and slowly lower your RIGHT arm back overhead","At the same time, slowly straighten your LEFT leg toward the floor","Lower back must not lift — that is the absolute rule","Return slowly, repeat other side"],
+      mod:"Lower back lifting? Put the dumbbells down and do bodyweight — lower back staying flat matters more than the weight.",
+      feel:"You should feel your deep abs working hard to stabilize your lower back against the weight of the dumbbells.",
+      gymsets:"3 × 10 each side",
+      homeex:"Dead Bug", homesets:"3 × 10 each side",
+      homenotes:"Lower back stays pressed to floor the entire time. No weight needed.",
+      hometip:"If your lower back lifts even slightly, make the movement smaller",
+      howtoHome:["Lie on back, arms straight up, knees bent 90 degrees in air","Press lower back firmly into floor","Slowly lower opposite arm and leg toward floor — only as far as back stays flat","Return slowly, repeat other side"],
+      modHome:"Do just the arm movement with no legs first if needed.",
+      feelHome:"Deep abs working to keep your back on the floor."
+    },
+    {
+      name:"Hollow Body Hold", area:"Full Core — Endurance", emoji:"🌙",
+      sets:"3 × 20-30 sec hold", notes:"Arms overhead, legs extended, lower back flat — breathe through it. A gym mat makes this easier on your back than home floor.", tip:"Pull your belly button toward the floor — that cue locks in the hollow position",
+      howto:["Lie on a gym mat, press lower back into the floor","Extend arms overhead, extend legs out straight","Lift arms, head, shoulders and legs slightly off the floor","Lower back stays COMPLETELY FLAT — this is the whole exercise","Hold and breathe — do not hold your breath","If lower back lifts, bend knees slightly to modify"],
+      mod:"Struggling? Bend both knees and keep feet flat. Build up to straight legs over time.",
+      feel:"You should feel your entire core — upper abs, lower abs, and sides — all working at once.",
+      gymsets:"3 × 20-30 sec hold",
+      homeex:"Hollow Body Hold", homesets:"3 × 20-30 sec hold",
+      homenotes:"Same exercise at home. Lower back flat is the only rule.",
+      hometip:"Pull your belly button toward the floor — that cue locks in the hollow position",
+      howtoHome:["Lie on back, press lower back into floor","Extend arms overhead, extend legs out","Lift arms, head, shoulders and legs slightly","Hold and breathe — lower back stays flat","Bend knees to modify if needed"],
+      modHome:"Struggling? Bend knees and keep feet flat. Build up over time.",
+      feelHome:"Entire core all working at once — upper abs, lower abs, and sides."
+    },
+    {
+      name:"Cable Reverse Crunch", area:"Lower Abs", emoji:"🔄",
+      sets:"3 × 15 reps", notes:"Lie on the floor with feet attached to low cable, curl hips toward chest against resistance. Targets lower abs with way more effectiveness than a regular reverse crunch.", tip:"The cable resistance on the way back down is where the lower abs really work — do not just let it pull your legs back",
+      howto:["Attach ankle straps to low cable, lie on the floor facing the machine","Knees bent at 90 degrees, hold the machine legs or a dumbbell on the floor behind your head for anchor","Using your LOWER ABS, curl hips up off the floor toward your chest","The cable adds resistance as you pull in","Hold at the top for 1 second","Slowly resist as the cable pulls your legs back to start","Do not just let the weight drop your legs back — control the return","15 reps"],
+      mod:"Cable setup feels awkward? Do the bodyweight version on the mat — same movement with no cable.",
+      feel:"You should feel this directly in your lower abs. The cable makes the return phase much harder than a regular reverse crunch.",
+      gymsets:"3 × 15 reps",
+      homeex:"Reverse Crunch", homesets:"3 × 15 reps",
+      homenotes:"Lift hips off floor using lower abs only — not momentum. Slow and intentional every rep.",
+      hometip:"If you feel it in hip flexors more than abs, slow down even more",
+      howtoHome:["Lie on back, legs raised, knees slightly bent","Press lower back into floor","Using lower abs, slowly curl hips up off the floor","Hold at top for 1 second","Lower slowly — do not drop"],
+      modHome:"Make the movement smaller if you feel it in hip flexors instead of abs.",
+      feelHome:"You should feel this directly in your lower abs — below the belly button."
+    }
   ]},
-  { label:"THU", title:"✨ Inner Thigh & Pelvic Floor", sub:"Precision work · Feel the detail", homesub:"Band above knees · Total control", exercises:[
-    { name:"Kegels — Quick Pulses", area:"Pelvic Floor — Activation", emoji:"✨", sets:"3 × 20 pulses", notes:"Contract and release pelvic floor rapidly. Fast, rhythmic, deliberate.", tip:"Think of it as blinking your pelvic floor — quick, rhythmic, deliberate", home:"Do it anywhere, anytime. Zero equipment — couch, floor, wherever.", homesets:"3 × 20 pulses", howto:["Can be done seated, standing, or lying down","Identify pelvic floor — muscles used to stop urination","Contract those muscles quickly","Release fully between each pulse","20 rapid pulses equals 1 set","Breathe normally — never hold your breath"] },
-    { name:"Kegels — Long Hold", area:"Pelvic Floor — Strength", emoji:"🔒", sets:"3 × 10 sec hold × 10", notes:"Squeeze, hold 10 seconds, fully release. The RELEASE matters just as much as the hold.", tip:"A full release after each hold prevents pelvic floor tightness — do not skip it", home:"Zero equipment. Do it seated on the couch or floor.", homesets:"3 × 10 sec hold × 10", howto:["Get comfortable — seated or lying works best","Contract pelvic floor muscles firmly","Hold for a full 10 seconds — count it out","FULLY release — let everything go completely","Rest 5 seconds","Repeat 10 times per set"] },
-    { name:"Sumo Squat Hold & Squeeze", area:"Inner Thighs & Pelvic Floor", emoji:"🦵", sets:"3 × 10 sec hold × 10", notes:"Hold sumo squat, squeeze inner thighs toward each other isometrically. You will not move.", tip:"It is an isometric squeeze — like trying to close your legs while they stay wide open", home:"Add band above knees for extra outer glute work while you hold the inner thigh squeeze.", homesets:"3 × 10 sec hold × 10", howto:["Feet wide, toes out, lower into sumo squat","Hold the squat position","Squeeze inner thighs toward each other — isometric","You will not move — just squeeze hard","Hold 10 seconds, fully release","10 holds per set — feel the inner thigh burn build"] },
-    { name:"Seated Butterfly Pulses", area:"Inner Thighs", emoji:"🦋", sets:"3 × 30 pulses", notes:"Feet together, pulse knees toward floor. Inner thigh burn builds fast — breathe through it.", tip:"Sit tall — slouching moves the work from inner thighs to your back", home:"Zero equipment. Sit on the floor, sit tall, pulse away.", homesets:"3 × 30 pulses", howto:["Sit on floor, soles of feet together","Sit up TALL — back straight","Pulse both knees toward floor rapidly","Small fast movement — inner thighs drive the pulse","30 continuous pulses per set","Breathe — do not hold your breath during the burn"] },
-    { name:"Resistance Band Seated Squeeze", area:"Inner Thighs — Resistance", emoji:"🟣", sets:"3 × 20", notes:"Band around knees, seated, squeeze knees together against the band. Controlled movement.", tip:"Band should create real resistance — too easy means you need a heavier band", home:"This IS the at-home version — band above knees is all you need.", homesets:"3 × 20", howto:["Sit in a chair or on the floor","Place resistance band just above knees","Knees start pressed apart by the band","Squeeze knees TOGETHER against band resistance","Hold 1 second at the squeeze","Release slowly — do not let band snap knees back"] },
-    { name:"Bridge with Pelvic Floor Hold", area:"Glutes & Pelvic Floor", emoji:"🏋️", sets:"3 × 10 reps", notes:"At the top squeeze pelvic floor AND glutes simultaneously for 3 full seconds.", tip:"This double contraction — glutes AND pelvic floor together — is the most powerful combo here", home:"This IS the at-home version — bodyweight on the floor. Add band above knees for more.", homesets:"3 × 10 reps", howto:["Lie on back, feet flat, knees bent","Drive hips up into glute bridge","At the TOP — squeeze glutes hard","SIMULTANEOUSLY contract pelvic floor","Hold both for 3 full seconds","Lower slowly, fully release, repeat"] }
+  { label:"THU", title:"✨ Inner Thigh & Pelvic Floor", sub:"Machines · Precision & resistance", homesub:"Band above knees · Total control", exercises:[
+    {
+      name:"Hip Adductor Machine", area:"Inner Thighs — Resistance", emoji:"🟣",
+      sets:"3 × 20 reps", notes:"Seated adductor machine — squeeze legs together against resistance. The most direct inner thigh exercise in the gym.", tip:"Control the opening — do not let the machine push your legs apart. The slow controlled open is half the exercise.",
+      howto:["Sit in the hip adductor machine — this is the one where you squeeze legs TOGETHER","Set the range so legs start comfortably open — not painfully wide","Choose a weight you can control for 20 reps","Sit tall — back straight, not slouched","Slowly squeeze both legs TOGETHER against the resistance","Hold the squeeze for 1 second","Slowly open legs back to start — take 2 to 3 seconds, resist the opening","20 slow controlled reps"],
+      mod:"Machine feels uncomfortable on your inner thighs? Reduce the range of motion — you do not need to go fully wide.",
+      feel:"You should feel this burning in your inner thighs. This is the adductor muscle that shapes and tones the inside of your legs.",
+      gymsets:"3 × 20 reps",
+      homeex:"Resistance Band Seated Squeeze", homesets:"3 × 20 reps",
+      homenotes:"Band around knees, seated, squeeze knees together against the band. Slow controlled movement.",
+      hometip:"The band should create real resistance — if it feels too easy, move to a heavier band",
+      howtoHome:["Sit in a sturdy chair, band just above both knees","Start with knees pressed apart by band tension","Slowly squeeze knees TOGETHER against resistance","Hold 1 second, slowly release — control the return","20 slow controlled reps"],
+      modHome:"No band? Squeeze your knees against your own hands placed on the outside — same concept.",
+      feelHome:"You should feel this in your inner thighs and outer hip simultaneously."
+    },
+    {
+      name:"Kegels — Quick Pulses", area:"Pelvic Floor — Activation", emoji:"✨",
+      sets:"3 × 20 pulses", notes:"Contract and release pelvic floor quickly. Do these seated on a bench between other exercises — no one can tell you are doing them.", tip:"Think of it as blinking your pelvic floor — quick, rhythmic, deliberate",
+      howto:["Sit comfortably on a bench","Locate your pelvic floor — the muscles used to stop urination","Contract those muscles quickly and firmly","Release FULLY between each pulse","20 quick pulses per set","Breathe normally — never hold your breath","You can do these while resting between other exercises"],
+      mod:"Struggling to locate the muscles? Lie on a mat — it is often easier to feel the engagement lying down.",
+      feel:"You should feel a subtle internal lift at the base of your pelvis.",
+      gymsets:"3 × 20 pulses",
+      homeex:"Kegels — Quick Pulses", homesets:"3 × 20 pulses",
+      homenotes:"Do it anywhere, anytime — couch, floor, chair. Zero equipment.",
+      hometip:"Think of it as blinking your pelvic floor — quick, rhythmic, deliberate",
+      howtoHome:["Seated, standing, or lying — whatever is comfortable","Contract pelvic floor quickly and firmly","Release FULLY between each pulse","20 pulses per set — breathe normally throughout"],
+      modHome:"Struggling to locate muscles? Lie on your back — easier to feel the engagement.",
+      feelHome:"A subtle internal lift at the base of your pelvis."
+    },
+    {
+      name:"Kegels — Long Hold", area:"Pelvic Floor — Strength", emoji:"🔒",
+      sets:"3 × 10 sec hold × 10", notes:"Squeeze and hold 10 full seconds, fully release. Do these on a bench between sets — no equipment, no one knows.", tip:"A full release after each hold prevents pelvic floor tension — never skip the release",
+      howto:["Sit on a bench between exercises","Contract pelvic floor muscles firmly","Hold for a full 10 seconds — count it slowly","FULLY release — let everything go completely","Rest 5 seconds","Repeat 10 times per set"],
+      mod:"Struggling to hold 10 seconds? Start with 5 second holds and build up.",
+      feel:"Firm internal engagement during hold, complete letting-go during release. Both matter.",
+      gymsets:"3 × 10 sec hold × 10",
+      homeex:"Kegels — Long Hold", homesets:"3 × 10 sec hold × 10",
+      homenotes:"Seated or lying. Squeeze, hold 10 seconds, fully release. The release matters as much as the hold.",
+      hometip:"A complete release after each hold prevents tension — never skip it",
+      howtoHome:["Get comfortable — seated or lying","Contract pelvic floor firmly","Hold for 10 seconds — count it out","FULLY release — let everything go","Rest 5 seconds, repeat 10 times"],
+      modHome:"Struggling to hold 10 seconds? Start with 5 second holds.",
+      feelHome:"Firm engagement during hold, complete release after. Both sensations matter."
+    },
+    {
+      name:"Cable Standing Hip Adduction", area:"Inner Thighs — Control", emoji:"🔗",
+      sets:"3 × 15 each leg", notes:"Ankle cuff on low cable, stand sideways, pull working leg across your body against resistance. Inner thigh with cable control.", tip:"Keep your standing leg slightly bent and your upper body still — all the movement is in the working leg",
+      howto:["Attach ankle cuff to low cable, strap to outside ankle","Stand sideways to the machine, hand on machine for balance","Working leg starts extended out to the side — cable pulls it outward","Slowly pull working leg IN across your body — crossing in front of standing leg","Squeeze inner thigh at the end of the movement","Slowly return to starting position — resist the cable pulling back","15 reps, then turn around and switch legs"],
+      mod:"Losing balance? Stand closer to the machine and hold the frame more firmly.",
+      feel:"You should feel this in the inner thigh of the working leg — especially at the end of the pull across.",
+      gymsets:"3 × 15 each leg",
+      homeex:"Seated Butterfly Pulses", homesets:"3 × 30 pulses",
+      homenotes:"Feet together, pulse knees toward floor. Inner thigh burn builds fast.",
+      hometip:"Sit TALL — slouching moves the work from inner thighs to your back",
+      howtoHome:["Sit on floor, soles of feet together, knees out","Sit up as TALL as possible","Pulse both knees toward floor — small fast movement","30 continuous pulses per set — breathe throughout"],
+      modHome:"Struggling to sit tall? Sit on the edge of a chair instead.",
+      feelHome:"You should feel a burn in your inner thighs."
+    },
+    {
+      name:"Sumo Squat Hold & Squeeze", area:"Inner Thighs & Pelvic Floor", emoji:"🦵",
+      sets:"3 × 10 sec hold × 10", notes:"Hold a dumbbell at chest for added resistance, sumo squat position, squeeze inner thighs isometrically.", tip:"It is an isometric squeeze — like trying to close your legs while they stay wide open. The dumbbell makes you work harder to stay stable.",
+      howto:["Hold one dumbbell vertically at your chest","Feet wide, toes out, lower into sumo squat position","Hold the squat — do not stand back up","Squeeze inner thighs toward each other isometrically — feet stay planted","Squeeze as hard as you can for 10 seconds","Fully release the squeeze — legs stay in position","10 holds per set","The dumbbell adds stability challenge on top of the inner thigh work"],
+      mod:"Dumbbell feels like too much? Do without weight — the isometric squeeze itself is the exercise.",
+      feel:"You should feel a deep burn in your inner thighs and your whole lower body working to stay stable.",
+      gymsets:"3 × 10 sec hold × 10",
+      homeex:"Sumo Squat Hold & Squeeze", homesets:"3 × 10 sec hold × 10",
+      homenotes:"Same exercise at home without the dumbbell. Isometric inner thigh squeeze in sumo squat.",
+      hometip:"It is an isometric squeeze — like trying to close your legs while they stay wide open",
+      howtoHome:["Feet wide, toes out, lower into sumo squat","Hold the squat position","Squeeze inner thighs toward each other isometrically — you will not move","Hold 10 seconds, fully release","10 holds per set"],
+      modHome:"Struggling to hold the squat? Use a chair — hover just above the seat and squeeze.",
+      feelHome:"Deep burn in inner thighs. Your whole lower body working to stay stable."
+    },
+    {
+      name:"Bridge with Pelvic Floor Hold", area:"Glutes & Pelvic Floor", emoji:"🏋️",
+      sets:"3 × 10 reps", notes:"On a mat at the gym with a weight plate on hips for added resistance. Squeeze glutes AND pelvic floor at the top simultaneously.", tip:"This double contraction — glutes AND pelvic floor together — is the most powerful combo in this entire workout",
+      howto:["Lie on a mat, feet flat, knees bent","Place a light weight plate on your hips — hold it with both hands","Drive hips up into glute bridge","At the TOP — squeeze glutes hard","SIMULTANEOUSLY contract pelvic floor","Hold both for 3 full seconds — breathe normally","Lower hips slowly — take 2 to 3 seconds","Fully release everything at the bottom","That is one rep"],
+      mod:"Weight plate feels awkward? Do without weight — the double contraction matters more than the added resistance.",
+      feel:"You should feel glutes working hard at the top and a subtle internal engagement in your pelvic floor together.",
+      gymsets:"3 × 10 reps",
+      homeex:"Bridge with Pelvic Floor Hold", homesets:"3 × 10 reps",
+      homenotes:"Same exercise at home — bodyweight only. Squeeze glutes AND pelvic floor at the top.",
+      hometip:"The double contraction — glutes AND pelvic floor together — is the most powerful combo here",
+      howtoHome:["Lie on back, feet flat, knees bent","Drive hips up into glute bridge","At top — squeeze glutes hard AND contract pelvic floor","Hold both for 3 full seconds","Lower slowly — fully release at the bottom"],
+      modHome:"Struggling to lift fully? A partial bridge still works both muscles effectively.",
+      feelHome:"Glutes working hard and subtle internal pelvic floor engagement at the top."
+    }
   ]}
 ];
 
 function Card(props) {
   var ex = props.ex, isDone = props.isDone, isOpen = props.isOpen, isHome = props.isHome;
+  var name = isHome ? ex.homeex : ex.name;
+  var area = ex.area;
+  var sets = isHome ? ex.homesets : ex.gymsets;
+  var notes = isHome ? ex.homenotes : ex.notes;
+  var tip = isHome ? ex.hometip : ex.tip;
+  var howto = isHome ? ex.howtoHome : ex.howto;
+  var mod = isHome ? ex.modHome : ex.mod;
+  var feel = isHome ? ex.feelHome : ex.feel;
+
   return React.createElement("div", { style:{background:isDone?"#0f1f0f":"#1a0030",border:"2px solid "+(isDone?"#166534":"#3b0764"),borderRadius:12,padding:"14px 16px",marginBottom:12} },
     React.createElement("div", { onClick:props.onCheck, style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6,cursor:"pointer"} },
       React.createElement("div", { style:{display:"flex",alignItems:"center",gap:8} },
         React.createElement("span", { style:{fontSize:20} }, ex.emoji),
         React.createElement("div", null,
-          React.createElement("div", { style:{fontWeight:700,fontSize:14,color:isDone?"#4ade80":"white"} }, (isDone?"✅ ":"")+ex.name),
-          React.createElement("div", { style:{fontSize:11,color:isHome?"#4ade80":"#7c3aed",fontWeight:600,marginTop:2} }, ex.area)
+          React.createElement("div", { style:{fontWeight:700,fontSize:14,color:isDone?"#4ade80":"white"} }, (isDone?"✅ ":"")+name),
+          React.createElement("div", { style:{fontSize:11,color:isHome?"#4ade80":"#7c3aed",fontWeight:600,marginTop:2} }, area)
         )
       ),
-      React.createElement("div", { style:{fontSize:11,color:"#6b7280",textAlign:"right"} }, isHome ? ex.homesets : ex.sets)
+      React.createElement("div", { style:{fontSize:11,color:"#6b7280",textAlign:"right"} }, sets)
     ),
-    React.createElement("div", { style:{fontSize:12,color:"#9ca3af",lineHeight:1.5,marginBottom:8} }, isHome ? ex.home : ex.notes),
-    React.createElement("div", { style:{background:"#0a0010",borderRadius:8,padding:"6px 10px",fontSize:11,color:"#c084fc",fontStyle:"italic",marginBottom:10} }, "💡 "+ex.tip),
+    React.createElement("div", { style:{fontSize:12,color:"#9ca3af",lineHeight:1.5,marginBottom:8} }, notes),
+    React.createElement("div", { style:{background:"#0a0010",borderRadius:8,padding:"6px 10px",fontSize:11,color:"#c084fc",fontStyle:"italic",marginBottom:10} }, "💡 "+tip),
     React.createElement("button", { onClick:props.onExpand, style:{background:isOpen?"#3b0764":"#0a0010",border:"1px solid #3b0764",borderRadius:8,padding:"6px 14px",fontSize:12,color:"#a78bfa",fontWeight:700,cursor:"pointer",width:"100%"} }, isOpen?"▲ Hide How To":"▼ How To"),
     isOpen && React.createElement("div", { style:{marginTop:10,background:"#0a0010",borderRadius:8,padding:"12px 14px"} },
-      ex.howto.map(function(step,s){ return React.createElement("div",{key:s,style:{display:"flex",gap:10,marginBottom:8}}, React.createElement("span",{style:{color:"#7c3aed",fontWeight:800,fontSize:13,minWidth:20}},(s+1)+"."), React.createElement("span",{style:{color:"#e2e8f0",fontSize:12,lineHeight:1.5}},step)); })
+      howto.map(function(step,s){ return React.createElement("div",{key:s,style:{display:"flex",gap:10,marginBottom:8}}, React.createElement("span",{style:{color:"#7c3aed",fontWeight:800,fontSize:13,minWidth:20}},(s+1)+"."), React.createElement("span",{style:{color:"#e2e8f0",fontSize:12,lineHeight:1.5}},step)); }),
+      React.createElement("div", { style:{marginTop:12,background:"#1a0030",borderRadius:8,padding:"10px 12px",borderLeft:"3px solid #7c3aed"} },
+        React.createElement("div", { style:{fontSize:11,color:"#c084fc",fontWeight:700,marginBottom:4} }, "😅 Struggling? Try this instead:"),
+        React.createElement("div", { style:{fontSize:11,color:"#9ca3af",lineHeight:1.5} }, mod)
+      ),
+      React.createElement("div", { style:{marginTop:8,background:"#0a1a0a",borderRadius:8,padding:"10px 12px",borderLeft:"3px solid #166534"} },
+        React.createElement("div", { style:{fontSize:11,color:"#4ade80",fontWeight:700,marginBottom:4} }, "✅ Where you should feel it:"),
+        React.createElement("div", { style:{fontSize:11,color:"#86efac",lineHeight:1.5} }, feel)
+      )
     )
   );
 }
@@ -89,31 +418,26 @@ function App() {
   return React.createElement("div", { style:{fontFamily:"system-ui,sans-serif",maxWidth:460,margin:"0 auto",padding:16,backgroundColor:"#0a0010",minHeight:"100vh"} },
     React.createElement("div", { style:{background:headerBg,borderRadius:14,padding:"18px 20px",color:"white",marginBottom:16} },
       React.createElement("div", { style:{fontSize:22,fontWeight:800} }, "👑 Goddess Training"),
-      React.createElement("div", { style:{fontSize:13,opacity:0.9,marginTop:2} }, isHome ? "🏠 At Home Edition · Bands & Bodyweight" : "Mon · Tue · Wed · Thu · Movement · Strength · Control"),
+      React.createElement("div", { style:{fontSize:13,opacity:0.9,marginTop:2} }, isHome ? "🏠 At Home · Bands & Bodyweight" : "🏋️ Gym · Cables · Machines · Dumbbells"),
       React.createElement("div", { style:{marginTop:10,background:"rgba(255,255,255,0.25)",borderRadius:8,height:8} },
         React.createElement("div", { style:{background:"white",borderRadius:8,height:8,width:pct+"%",transition:"width 0.3s"} })
       ),
       React.createElement("div", { style:{fontSize:12,opacity:0.85,marginTop:4} }, done+" of "+exs.length+" complete"+(done===exs.length?" 👑 DONE!":""))
     ),
-
     React.createElement("div", { style:{display:"flex",background:"#1a0030",borderRadius:10,padding:4,marginBottom:12,gap:4} },
       React.createElement("button", { onClick:function(){setMode("gym");setChecked({});}, style:{flex:1,padding:"8px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,background:!isHome?"#7c3aed":"transparent",color:!isHome?"white":"#9ca3af"} }, "🏋️ Gym"),
       React.createElement("button", { onClick:function(){setMode("home");setChecked({});}, style:{flex:1,padding:"8px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,background:isHome?"#059669":"transparent",color:isHome?"white":"#9ca3af"} }, "🏠 At Home")
     ),
-
     React.createElement("div", { style:{display:"flex",background:"#1a0030",borderRadius:10,padding:4,marginBottom:12,gap:4} },
       DAYS.map(function(d,i){ return React.createElement("button",{key:i,onClick:function(){setTab(i);},style:{flex:1,padding:"8px 2px",borderRadius:8,border:"none",cursor:"pointer",fontSize:10,fontWeight:700,background:tab===i?"#7c3aed":"transparent",color:tab===i?"white":"#9ca3af"}},d.label); })
     ),
-
     React.createElement("div", { style:{background:"#1a0030",borderRadius:8,padding:"10px 14px",fontSize:12,color:isHome?"#4ade80":"#a78bfa",marginBottom:14,fontWeight:600} },
       day.title+" · "+(isHome ? day.homesub : day.sub)
     ),
-
     exs.map(function(ex,i){
       var ckey=mode+"-"+tab+"-"+i, ekey=mode+"-"+tab+"-e-"+i;
       return React.createElement(Card,{key:i,ex:ex,isDone:!!checked[ckey],isOpen:!!expanded[ekey],isHome:isHome,onCheck:function(){ck(ckey);},onExpand:function(ev){ev.stopPropagation();ek(ekey);}});
     }),
-
     React.createElement("div", { style:{marginTop:16,background:"#1a0030",borderRadius:10,padding:"14px 16px",fontSize:12,color:"#c084fc",fontWeight:600,textAlign:"center",border:"1px solid #3b0764"} }, "👑 Consistency builds goddesses. Show up Mon through Thu every week.")
   );
 }
