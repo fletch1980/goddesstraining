@@ -15,11 +15,11 @@ var useState = React.useState;
 
 function getInitialTab() {
   var d = new Date().getDay();
-  if (d === 1) return 0; // MON
-  if (d === 2) return 1; // TUE
-  if (d === 3) return 2; // WED
-  if (d === 4) return 3; // THU
-  return 0; // default MON for Fri/Sat/Sun
+  if (d === 1) return 0;
+  if (d === 2) return 1;
+  if (d === 3) return 2;
+  if (d === 4) return 3;
+  return 0;
 }
 
 var DAYS = [
@@ -283,9 +283,9 @@ var DAYS = [
   ]},
   { label:"THU", title:"✨ Inner Thigh & Pelvic Floor", sub:"Machines · Precision & resistance", homesub:"Band above knees · Total control", exercises:[
     {
-      name:"Hip Adductor Machine", area:"Inner Thighs — Resistance", emoji:"🟣",
-      sets:"3 × 20 reps", notes:"Seated adductor machine — squeeze legs together against resistance. The most direct inner thigh exercise in the gym.", tip:"Control the opening — do not let the machine push your legs apart. The slow controlled open is half the exercise.",
-      howto:["Sit in the hip adductor machine — this is the one where you squeeze legs TOGETHER","Set the range so legs start comfortably open — not painfully wide","Choose a weight you can control for 20 reps","Sit tall — back straight, not slouched","Slowly squeeze both legs TOGETHER against the resistance","Hold the squeeze for 1 second","Slowly open legs back to start — take 2 to 3 seconds, resist the opening","20 slow controlled reps"],
+      name:"Seated Inner Thigh Machine", area:"Inner Thighs — Squeeze Together", emoji:"🟣",
+      sets:"3 × 20 reps", notes:"Seated adductor machine — squeeze legs TOGETHER against resistance. The most direct inner thigh exercise in the gym.", tip:"Control the opening — do not let the machine push your legs apart. The slow controlled open is half the exercise.",
+      howto:["Sit in the inner thigh machine — pads on the INSIDE of your knees","Set the range so legs start comfortably open — not painfully wide","Choose a weight you can control for 20 reps","Sit tall — back straight, not slouched","Slowly squeeze both legs TOGETHER against the resistance","Hold the squeeze for 1 second","Slowly open legs back to start — take 2 to 3 seconds, resist the opening","20 slow controlled reps"],
       mod:"Machine feels uncomfortable on your inner thighs? Reduce the range of motion — you do not need to go fully wide.",
       feel:"You should feel this burning in your inner thighs. This is the adductor muscle that shapes and tones the inside of your legs.",
       gymsets:"3 × 20 reps",
@@ -295,6 +295,20 @@ var DAYS = [
       howtoHome:["Sit in a sturdy chair, band just above both knees","Start with knees pressed apart by band tension","Slowly squeeze knees TOGETHER against resistance","Hold 1 second, slowly release — control the return","20 slow controlled reps"],
       modHome:"No band? Squeeze your knees against your own hands placed on the outside — same concept.",
       feelHome:"You should feel this in your inner thighs and outer hip simultaneously."
+    },
+    {
+      name:"Seated Outer Thigh Machine", area:"Outer Glutes & Hip Dips — Push Apart", emoji:"↔️",
+      sets:"3 × 20 reps", notes:"Seated abductor machine — push legs APART against resistance. Targets the glute medius that fills hip dips and builds outer glute shape.", tip:"Control the return — do not let the machine slam your legs back in. The slow return is half the exercise.",
+      howto:["Sit in the outer thigh machine — pads on the OUTSIDE of your knees","Set a weight you can control for 20 reps — not too heavy","Sit tall — back straight, not slouched","Slowly push both legs APART against the pads","Push as wide as the machine allows — hold for 1 second","Slowly return legs to starting position — take 2 to 3 seconds","Do not let the weight stack drop — control every inch","20 slow controlled reps per set"],
+      mod:"Lean slightly forward while pushing apart — this shifts more work to the glute medius instead of the hip flexors.",
+      feel:"You should feel this in your outer glutes — the side of your butt. This is the glute medius that fills hip dips.",
+      gymsets:"3 × 20 reps",
+      homeex:"Standing Hip Drop", homesets:"3 × 20 reps (10 each side)",
+      homenotes:"Stand tall, drop one hip down at a time — slow and controlled. Feet stay planted the entire time.",
+      hometip:"This is a DROP not a sway — let one hip fall toward the floor while the other stays up",
+      howtoHome:["Stand with feet shoulder-width apart, soft bend in knees, hands on hips","Slowly drop your RIGHT hip down toward the floor","Your right knee bends slightly — that is normal","Hold the drop for 1 second, return to center","Drop your LEFT hip down, hold 1 second, return","Alternate sides slowly — right, center, left, center"],
+      modHome:"Struggling with balance? Stand next to a wall and lightly touch it with one hand.",
+      feelHome:"You should feel this in your outer hips and the sides of your waist."
     },
     {
       name:"Kegels — Quick Pulses", area:"Pelvic Floor — Activation", emoji:"✨",
@@ -323,20 +337,6 @@ var DAYS = [
       howtoHome:["Get comfortable — seated or lying","Contract pelvic floor firmly","Hold for 10 seconds — count it out","FULLY release — let everything go","Rest 5 seconds, repeat 10 times"],
       modHome:"Struggling to hold 10 seconds? Start with 5 second holds.",
       feelHome:"Firm engagement during hold, complete release after. Both sensations matter."
-    },
-    {
-      name:"Cable Standing Hip Adduction", area:"Inner Thighs — Control", emoji:"🔗",
-      sets:"3 × 15 each leg", notes:"Ankle cuff on low cable, stand sideways, pull working leg across your body against resistance. Inner thigh with cable control.", tip:"Keep your standing leg slightly bent and your upper body still — all the movement is in the working leg",
-      howto:["Attach ankle cuff to low cable, strap to outside ankle","Stand sideways to the machine, hand on machine for balance","Working leg starts extended out to the side — cable pulls it outward","Slowly pull working leg IN across your body — crossing in front of standing leg","Squeeze inner thigh at the end of the movement","Slowly return to starting position — resist the cable pulling back","15 reps, then turn around and switch legs"],
-      mod:"Losing balance? Stand closer to the machine and hold the frame more firmly.",
-      feel:"You should feel this in the inner thigh of the working leg — especially at the end of the pull across.",
-      gymsets:"3 × 15 each leg",
-      homeex:"Seated Butterfly Pulses", homesets:"3 × 30 pulses",
-      homenotes:"Feet together, pulse knees toward floor. Inner thigh burn builds fast.",
-      hometip:"Sit TALL — slouching moves the work from inner thighs to your back",
-      howtoHome:["Sit on floor, soles of feet together, knees out","Sit up as TALL as possible","Pulse both knees toward floor — small fast movement","30 continuous pulses per set — breathe throughout"],
-      modHome:"Struggling to sit tall? Sit on the edge of a chair instead.",
-      feelHome:"You should feel a burn in your inner thighs."
     },
     {
       name:"Sumo Squat Hold & Squeeze", area:"Inner Thighs & Pelvic Floor", emoji:"🦵",
