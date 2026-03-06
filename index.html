@@ -26,7 +26,14 @@
 var useState = React.useState;
 var useEffect = React.useEffect;
 
-function todayStr(){ return new Date().toISOString().split('T')[0]; }
+// ── LOCAL DATE (never UTC) ────────────────────────────────
+function todayStr() {
+  var n = new Date();
+  var y = n.getFullYear();
+  var mo = n.getMonth() + 1;
+  var d = n.getDate();
+  return y + '-' + (mo < 10 ? '0'+mo : mo) + '-' + (d < 10 ? '0'+d : d);
+}
 
 function safeGet(k){try{return localStorage.getItem(k);}catch(e){try{return sessionStorage.getItem(k);}catch(e2){return null;}}}
 function safeSet(k,v){try{localStorage.setItem(k,v);}catch(e){try{sessionStorage.setItem(k,v);}catch(e2){}}}
@@ -157,12 +164,13 @@ function HistoryView() {
             return React.createElement('div',{key:ex,className:'hist-block'},
               React.createElement('div',{className:'hist-date'},ex),
               entries.map(function(entry,idx){
+                var capturedIdx=idx;
                 return React.createElement('div',{key:idx,className:'hist-row'},
                   React.createElement('span',null,(entry.sets?entry.sets+' sets':''),(entry.reps?' × '+entry.reps+' reps':''),(entry.weight?' @ '+entry.weight:'')),
                   React.createElement('span',{style:{display:'flex',alignItems:'center',gap:6}},
                     entry.note?React.createElement('span',{style:{color:'#9ca3af',fontStyle:'italic'}},entry.note):null,
                     React.createElement('span',{style:{color:'#6b7280'}},entry.time||''),
-                    React.createElement('button',{className:'del',onClick:function(){delEntry(logKey,idx);}},'×')
+                    React.createElement('button',{className:'del',onClick:function(){delEntry(logKey,capturedIdx);}},'×')
                   )
                 );
               })
