@@ -18,6 +18,28 @@
     .hist-date{color:#c084fc;font-weight:700;font-size:11px;margin-bottom:4px;}
     .hist-block{background:#0a0010;border-radius:8px;padding:8px 10px;margin-bottom:8px;}
     .del{background:none;border:none;color:#ef4444;cursor:pointer;font-size:13px;padding:0 2px;}
+    /* Calendar picker */
+    .cal-picker{background:#1a0030;border:1px solid #3b0764;border-radius:12px;padding:12px;margin-bottom:12px;}
+    .cal-picker-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+    .cal-picker-title{color:#c084fc;font-size:13px;font-weight:800;}
+    .cal-nav{background:#3b076433;border:1px solid #3b0764;color:#c084fc;border-radius:6px;padding:3px 8px;font-size:12px;cursor:pointer;}
+    .cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;}
+    .cal-dow span{text-align:center;font-size:9px;color:#6b7280;font-weight:700;}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+    .cal-cell{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#6b7280;background:#0a0010;cursor:pointer;}
+    .cal-cell:hover{background:#3b076433;color:#c084fc;}
+    .cal-cell.today{border:1.5px solid #7c3aed;color:white;}
+    .cal-cell.selected{background:#7c3aed;color:white;}
+    .cal-cell.future{opacity:0.25;pointer-events:none;}
+    .cal-cell.empty{background:transparent;pointer-events:none;}
+    .active-date-bar{background:#3b0764;border-radius:8px;padding:7px 12px;margin-bottom:12px;font-size:12px;color:#c084fc;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+    .today-btn{background:none;border:1px solid #7c3aed;border-radius:6px;color:#a78bfa;font-size:11px;padding:3px 8px;cursor:pointer;}
+    /* Per-set log */
+    .set-row{display:grid;grid-template-columns:28px 1fr 1fr 24px;gap:5px;align-items:center;margin-bottom:6px;}
+    .set-label{font-size:11px;font-weight:800;color:#7c3aed;text-align:center;}
+    .add-set-btn{background:#0a0010;border:1px dashed #7c3aed;border-radius:8px;color:#a78bfa;font-size:12px;font-weight:700;padding:7px;cursor:pointer;width:100%;margin-top:4px;}
+    .remove-set-btn{background:none;border:none;color:#6b7280;cursor:pointer;font-size:15px;line-height:1;padding:0;}
+    .remove-set-btn:hover{color:#ef4444;}
   </style>
 </head>
 <body>
@@ -26,14 +48,8 @@
 var useState = React.useState;
 var useEffect = React.useEffect;
 
-// ── LOCAL DATE (never UTC) ────────────────────────────────
-function todayStr() {
-  var n = new Date();
-  var y = n.getFullYear();
-  var mo = n.getMonth() + 1;
-  var d = n.getDate();
-  return y + '-' + (mo < 10 ? '0'+mo : mo) + '-' + (d < 10 ? '0'+d : d);
-}
+function todayStr(){var n=new Date(),y=n.getFullYear(),mo=n.getMonth()+1,d=n.getDate();return y+'-'+(mo<10?'0'+mo:mo)+'-'+(d<10?'0'+d:d);}
+function friendlyDate(iso){return new Date(iso+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});}
 
 function safeGet(k){try{return localStorage.getItem(k);}catch(e){try{return sessionStorage.getItem(k);}catch(e2){return null;}}}
 function safeSet(k,v){try{localStorage.setItem(k,v);}catch(e){try{sessionStorage.setItem(k,v);}catch(e2){}}}
@@ -45,10 +61,12 @@ function safeKeys(prefix){
   return keys;
 }
 
-function getInitialTab() {
-  var d = new Date().getDay();
-  if (d===1) return 0; if (d===2) return 1; if (d===3) return 2; if (d===4) return 3;
-  return 0;
+function getInitialTab(){var d=new Date().getDay();if(d===1)return 0;if(d===2)return 1;if(d===3)return 2;if(d===4)return 3;return 0;}
+
+function parseSets(setsStr){
+  if(!setsStr) return 3;
+  var m=setsStr.match(/^(\d+)/);
+  return m?Math.min(parseInt(m[1]),6):3;
 }
 
 var DAYS = [
@@ -86,42 +104,92 @@ var DAYS = [
   ]}
 ];
 
-// ── LOG FORM ─────────────────────────────────────────────────
-function LogForm(props) {
-  var s=useState(''),r=useState(''),w=useState(''),n=useState('');
-  var sets=s[0],setSets=s[1],reps=r[0],setReps=r[1],weight=w[0],setWeight=w[1],note=n[0],setNote=n[1];
-  var sv=useState(false),setSaving=sv[1];sv=sv[0];
+// ── CALENDAR PICKER ───────────────────────────────────────────
+function CalendarPicker(props) {
+  var activeDate=props.activeDate, onSelect=props.onSelect;
+  var todayISO=todayStr();
+  var initY=parseInt(activeDate.slice(0,4)), initM=parseInt(activeDate.slice(5,7))-1;
+  var cy=useState(initY),calYear=cy[0],setCalYear=cy[1];
+  var cm=useState(initM),calMonth=cm[0],setCalMonth=cm[1];
+  function prevMonth(){if(calMonth===0){setCalMonth(11);setCalYear(calYear-1);}else setCalMonth(calMonth-1);}
+  function nextMonth(){var nm=calMonth+1,ny=calYear;if(nm>11){nm=0;ny++;}var fp=ny+'-'+String(nm+1).padStart(2,'0')+'-01';if(fp>todayISO)return;setCalMonth(nm);setCalYear(ny);}
+  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var firstDay=new Date(calYear,calMonth,1).getDay();
+  var daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  var cells=[];
+  for(var i=0;i<firstDay;i++) cells.push(null);
+  for(var d=1;d<=daysInMonth;d++) cells.push(d);
+  return React.createElement('div',{className:'cal-picker'},
+    React.createElement('div',{className:'cal-picker-header'},
+      React.createElement('button',{className:'cal-nav',onClick:prevMonth},'◀'),
+      React.createElement('span',{className:'cal-picker-title'},months[calMonth]+' '+calYear),
+      React.createElement('button',{className:'cal-nav',onClick:nextMonth},'▶')
+    ),
+    React.createElement('div',{className:'cal-dow'},['Su','Mo','Tu','We','Th','Fr','Sa'].map(function(d){return React.createElement('span',{key:d},d);})),
+    React.createElement('div',{className:'cal-grid'},
+      cells.map(function(d,i){
+        if(!d) return React.createElement('div',{key:'e'+i,className:'cal-cell empty'});
+        var iso=calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+        var isFuture=iso>todayISO, isToday=iso===todayISO, isSel=iso===activeDate;
+        var cls='cal-cell'+(isToday?' today':'')+(isSel?' selected':'')+(isFuture?' future':'');
+        return React.createElement('div',{key:iso,className:cls,onClick:function(){if(!isFuture)onSelect(iso);}},d);
+      })
+    )
+  );
+}
 
-  function submit() {
-    if(!sets&&!reps&&!weight) return;
+// ── PER-SET LOG FORM ──────────────────────────────────────────
+function LogForm(props) {
+  var numSets=parseSets(props.isHome?props.homesets:props.gymsets);
+  function makeRow(){return{reps:'',weight:''};}
+  var initRows=[];
+  for(var i=0;i<numSets;i++) initRows.push(makeRow());
+  var rw=useState(initRows),rows=rw[0],setRows=rw[1];
+  var sv=useState(false),saving=sv[0],setSaving=sv[1];
+
+  function updateRow(idx,field,val){setRows(function(prev){var next=prev.map(function(r){return Object.assign({},r);});next[idx][field]=val;return next;});}
+  function addRow(){setRows(function(prev){return prev.concat(makeRow());});}
+  function removeRow(idx){setRows(function(prev){if(prev.length<=1)return prev;return prev.filter(function(_,i){return i!==idx;});});}
+
+  function submit(){
+    var filled=rows.filter(function(r){return r.reps||r.weight;});
+    if(!filled.length) return;
     setSaving(true);
-    var key='gdt_'+todayStr()+'_'+props.exName.replace(/\s+/g,'-');
+    var logDate=props.logDate||todayStr();
+    var key='gdt_'+logDate+'_'+props.exName.replace(/\s+/g,'-');
     var existing=JSON.parse(safeGet(key)||'[]');
-    existing.push({sets:sets,reps:reps,weight:weight,note:note,time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})});
+    var timestamp=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    filled.forEach(function(r,i){existing.push({set:i+1,reps:r.reps,weight:r.weight,time:timestamp});});
     safeSet(key,JSON.stringify(existing));
-    setSets('');setReps('');setWeight('');setNote('');
+    var reset=[];for(var i=0;i<numSets;i++)reset.push(makeRow());
+    setRows(reset);
     setSaving(false);
     props.onSaved();
   }
 
-  var inp={background:'#0a0010',border:'1px solid #3b0764',borderRadius:6,color:'white',padding:'6px 8px',fontSize:12,width:'100%',outline:'none'};
-
   return React.createElement('div',{style:{background:'#0a0010',border:'1px solid #3b0764',borderRadius:10,padding:12,marginTop:8}},
-    React.createElement('div',{style:{fontSize:11,color:'#c084fc',fontWeight:700,marginBottom:8}},'📝 Log This Exercise'),
-    React.createElement('div',{style:{display:'flex',gap:6,marginBottom:6}},
-      React.createElement('div',{style:{flex:1}},React.createElement('div',{style:{fontSize:10,color:'#9ca3af',marginBottom:3}},'SETS'),React.createElement('input',{type:'number',placeholder:'3',value:sets,onChange:function(e){setSets(e.target.value);},style:inp})),
-      React.createElement('div',{style:{flex:1}},React.createElement('div',{style:{fontSize:10,color:'#9ca3af',marginBottom:3}},'REPS'),React.createElement('input',{type:'number',placeholder:'15',value:reps,onChange:function(e){setReps(e.target.value);},style:inp})),
-      React.createElement('div',{style:{flex:1}},React.createElement('div',{style:{fontSize:10,color:'#9ca3af',marginBottom:3}},'WEIGHT'),React.createElement('input',{type:'text',placeholder:'20 lb',value:weight,onChange:function(e){setWeight(e.target.value);},style:inp}))
+    React.createElement('div',{style:{fontSize:11,color:'#c084fc',fontWeight:700,marginBottom:10}},'📝 Log This Exercise'),
+    React.createElement('div',{style:{display:'grid',gridTemplateColumns:'28px 1fr 1fr 24px',gap:5,marginBottom:4}},
+      React.createElement('div',null),
+      React.createElement('div',{style:{fontSize:10,color:'#9ca3af',fontWeight:700}},'REPS'),
+      React.createElement('div',{style:{fontSize:10,color:'#9ca3af',fontWeight:700}},'WEIGHT'),
+      React.createElement('div',null)
     ),
-    React.createElement('div',{style:{marginBottom:8}},
-      React.createElement('div',{style:{fontSize:10,color:'#9ca3af',marginBottom:3}},'NOTE (optional)'),
-      React.createElement('input',{type:'text',placeholder:'e.g. felt strong, good form...',value:note,onChange:function(e){setNote(e.target.value);},style:inp})
-    ),
-    React.createElement('button',{className:'log-btn',onClick:submit,style:{width:'100%',opacity:sv?0.6:1}},sv?'Saving...':'💾 Save Set')
+    rows.map(function(row,i){
+      var ci=i;
+      return React.createElement('div',{key:i,className:'set-row'},
+        React.createElement('div',{className:'set-label'},'S'+(i+1)),
+        React.createElement('input',{type:'number',placeholder:'15',value:row.reps,onChange:function(e){updateRow(ci,'reps',e.target.value);}}),
+        React.createElement('input',{type:'text',placeholder:'20 lb',value:row.weight,onChange:function(e){updateRow(ci,'weight',e.target.value);}}),
+        React.createElement('button',{className:'remove-set-btn',onClick:function(){removeRow(ci);}},'×')
+      );
+    }),
+    React.createElement('button',{className:'add-set-btn',onClick:addRow},'+ Add Set'),
+    React.createElement('button',{className:'log-btn',onClick:submit,style:{width:'100%',marginTop:10,opacity:saving?0.6:1}},saving?'Saving...':'💾 Save All Sets')
   );
 }
 
-// ── HISTORY VIEW ─────────────────────────────────────────────
+// ── HISTORY VIEW ──────────────────────────────────────────────
 function HistoryView() {
   var d=useState(null),setData=d[1];d=d[0];
   var rf=useState(0),setRf=rf[1];rf=rf[0];
@@ -131,7 +199,7 @@ function HistoryView() {
     var byDate={};
     keys.forEach(function(k){
       var parts=k.replace('gdt_','').split('_');
-      var date=parts[0], ex=parts.slice(1).join(' ').replace(/-/g,' ');
+      var date=parts[0],ex=parts.slice(1).join(' ').replace(/-/g,' ');
       var entries=JSON.parse(safeGet(k)||'[]');
       if(!byDate[date])byDate[date]={};
       byDate[date][ex]=entries;
@@ -142,8 +210,7 @@ function HistoryView() {
   function delEntry(key,idx){
     var entries=JSON.parse(safeGet(key)||'[]');
     entries.splice(idx,1);
-    if(entries.length){safeSet(key,JSON.stringify(entries));}
-    else{safeRemove(key);}
+    if(entries.length){safeSet(key,JSON.stringify(entries));}else{safeRemove(key);}
     setRf(function(x){return x+1;});
   }
 
@@ -154,7 +221,7 @@ function HistoryView() {
   return React.createElement('div',null,
     dates.map(function(date){
       var exs=d[date];
-      var friendly=new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      var friendly=friendlyDate(date);
       return React.createElement('div',{key:date,style:{background:'#1a0030',border:'1px solid #3b0764',borderRadius:12,marginBottom:12,overflow:'hidden'}},
         React.createElement('div',{style:{padding:'10px 14px',background:'#2a0050',fontSize:13,fontWeight:800,color:'#c084fc'}},'📅 '+friendly),
         React.createElement('div',{style:{padding:'10px 14px'}},
@@ -164,13 +231,16 @@ function HistoryView() {
             return React.createElement('div',{key:ex,className:'hist-block'},
               React.createElement('div',{className:'hist-date'},ex),
               entries.map(function(entry,idx){
-                var capturedIdx=idx;
+                var ci=idx,ck=logKey;
+                var label=entry.set?'Set '+entry.set:'';
+                var detail=(entry.reps?entry.reps+' reps':'')+(entry.weight?' @ '+entry.weight:'');
+                if(!entry.set&&(entry.sets||entry.note)){label=entry.sets?entry.sets+' sets':'';detail=(entry.reps?'× '+entry.reps+' reps':'')+(entry.weight?' @ '+entry.weight:'')+(entry.note?' — '+entry.note:'');}
                 return React.createElement('div',{key:idx,className:'hist-row'},
-                  React.createElement('span',null,(entry.sets?entry.sets+' sets':''),(entry.reps?' × '+entry.reps+' reps':''),(entry.weight?' @ '+entry.weight:'')),
+                  React.createElement('span',{style:{color:'#a78bfa',fontWeight:700,marginRight:6}},label),
+                  React.createElement('span',null,detail),
                   React.createElement('span',{style:{display:'flex',alignItems:'center',gap:6}},
-                    entry.note?React.createElement('span',{style:{color:'#9ca3af',fontStyle:'italic'}},entry.note):null,
                     React.createElement('span',{style:{color:'#6b7280'}},entry.time||''),
-                    React.createElement('button',{className:'del',onClick:function(){delEntry(logKey,capturedIdx);}},'×')
+                    React.createElement('button',{className:'del',onClick:function(){delEntry(ck,ci);}},'×')
                   )
                 );
               })
@@ -182,9 +252,9 @@ function HistoryView() {
   );
 }
 
-// ── CARD ─────────────────────────────────────────────────────
+// ── CARD ──────────────────────────────────────────────────────
 function Card(props) {
-  var ex=props.ex,isDone=props.isDone,isOpen=props.isOpen,isHome=props.isHome,showLog=props.showLog;
+  var ex=props.ex,isDone=props.isDone,isOpen=props.isOpen,isHome=props.isHome,showLog=props.showLog,logDate=props.logDate;
   var sets=isHome?ex.homesets:ex.gymsets;
   var notes=isHome?ex.homenotes:ex.notes;
   var tip=isHome?ex.hometip:ex.tip;
@@ -220,11 +290,15 @@ function Card(props) {
         React.createElement('div',{style:{fontSize:11,color:'#86efac',lineHeight:1.5}},feel)
       )
     ),
-    showLog&&React.createElement(LogForm,{exName:ex.name,onSaved:function(){props.onLogSaved&&props.onLogSaved();}})
+    showLog&&React.createElement(LogForm,{
+      exName:ex.name,logDate:logDate,
+      gymsets:ex.gymsets,homesets:ex.homesets,isHome:isHome,
+      onSaved:function(){props.onLogSaved&&props.onLogSaved();}
+    })
   );
 }
 
-// ── APP ──────────────────────────────────────────────────────
+// ── APP ───────────────────────────────────────────────────────
 function App() {
   var t=useState(getInitialTab),tab=t[0],setTab=t[1];
   var m=useState('gym'),mode=m[0],setMode=m[1];
@@ -233,11 +307,15 @@ function App() {
   var lg=useState({}),logOpen=lg[0],setLogOpen=lg[1];
   var mt=useState('workout'),mainTab=mt[0],setMainTab=mt[1];
   var hr=useState(0),histRefresh=hr[0],setHistRefresh=hr[1];
+  var ld=useState(todayStr()),logDate=ld[0],setLogDate=ld[1];
+  var sc=useState(false),showCal=sc[0],setShowCal=sc[1];
 
   var isHome=mode==='home';
+  var isLog=mainTab==='log';
   var day=DAYS[tab];
   var exs=day.exercises;
-  var done=exs.filter(function(_,i){return !!checked[mode+'-'+tab+'-'+i];}).length;
+  var isToday=logDate===todayStr();
+  var done=exs.filter(function(_,i){return!!checked[mode+'-'+tab+'-'+i];}).length;
   var pct=(done/exs.length)*100;
 
   function ck(key){setChecked(function(prev){var n=Object.assign({},prev);n[key]=!prev[key];return n;});}
@@ -250,7 +328,7 @@ function App() {
     React.createElement('div',{style:{background:headerBg,borderRadius:14,padding:'18px 20px',color:'white',marginBottom:16}},
       React.createElement('div',{style:{fontSize:22,fontWeight:800}},'👑 Goddess Training'),
       React.createElement('div',{style:{fontSize:13,opacity:0.9,marginTop:2}},isHome?'🏠 At Home · Bands & Bodyweight':'🏋️ Gym · Cables · Machines · Dumbbells'),
-      mainTab==='workout'&&React.createElement('div',null,
+      !isLog&&React.createElement('div',null,
         React.createElement('div',{style:{marginTop:10,background:'rgba(255,255,255,0.25)',borderRadius:8,height:8}},
           React.createElement('div',{style:{background:'white',borderRadius:8,height:8,width:pct+'%',transition:'width 0.3s'}})
         ),
@@ -258,11 +336,22 @@ function App() {
       )
     ),
     React.createElement('div',{style:{display:'flex',background:'#1a0030',borderRadius:10,padding:4,marginBottom:12,gap:4}},
-      React.createElement('button',{onClick:function(){setMainTab('workout');},style:{flex:1,padding:'9px 4px',borderRadius:8,border:'none',cursor:'pointer',fontSize:12,fontWeight:700,background:mainTab==='workout'?'#7c3aed':'transparent',color:mainTab==='workout'?'white':'#9ca3af'}},'🏋️ Workout'),
-      React.createElement('button',{onClick:function(){setMainTab('log');setHistRefresh(function(x){return x+1;});},style:{flex:1,padding:'9px 4px',borderRadius:8,border:'none',cursor:'pointer',fontSize:12,fontWeight:700,background:mainTab==='log'?'#7c3aed':'transparent',color:mainTab==='log'?'white':'#9ca3af'}},'📅 Log History')
+      React.createElement('button',{onClick:function(){setMainTab('workout');},style:{flex:1,padding:'9px 4px',borderRadius:8,border:'none',cursor:'pointer',fontSize:12,fontWeight:700,background:!isLog?'#7c3aed':'transparent',color:!isLog?'white':'#9ca3af'}},'🏋️ Workout'),
+      React.createElement('button',{onClick:function(){setMainTab('log');setHistRefresh(function(x){return x+1;});},style:{flex:1,padding:'9px 4px',borderRadius:8,border:'none',cursor:'pointer',fontSize:12,fontWeight:700,background:isLog?'#7c3aed':'transparent',color:isLog?'white':'#9ca3af'}},'📅 Log History')
     ),
-    mainTab==='log'&&React.createElement(HistoryView,{key:histRefresh}),
-    mainTab==='workout'&&React.createElement('div',null,
+    // Active date bar (workout tab only)
+    !isLog&&React.createElement('div',null,
+      React.createElement('div',{className:'active-date-bar'},
+        React.createElement('span',null,'📅 Logging for: ',React.createElement('strong',null,isToday?'Today ('+friendlyDate(logDate)+')':friendlyDate(logDate))),
+        React.createElement('div',{style:{display:'flex',gap:6}},
+          !isToday&&React.createElement('button',{className:'today-btn',onClick:function(){setLogDate(todayStr());setShowCal(false);}},'Today'),
+          React.createElement('button',{className:'today-btn',onClick:function(){setShowCal(function(v){return !v;});},style:{borderColor:'#c084fc',color:'#c084fc'}},showCal?'✕ Close':'📆 Change')
+        )
+      ),
+      showCal&&React.createElement(CalendarPicker,{activeDate:logDate,onSelect:function(iso){setLogDate(iso);setShowCal(false);}})
+    ),
+    isLog&&React.createElement(HistoryView,{key:histRefresh}),
+    !isLog&&React.createElement('div',null,
       React.createElement('div',{style:{display:'flex',background:'#1a0030',borderRadius:10,padding:4,marginBottom:12,gap:4}},
         React.createElement('button',{onClick:function(){setMode('gym');setChecked({});},style:{flex:1,padding:'8px 4px',borderRadius:8,border:'none',cursor:'pointer',fontSize:11,fontWeight:700,background:!isHome?'#7c3aed':'transparent',color:!isHome?'white':'#9ca3af'}},'🏋️ Gym'),
         React.createElement('button',{onClick:function(){setMode('home');setChecked({});},style:{flex:1,padding:'8px 4px',borderRadius:8,border:'none',cursor:'pointer',fontSize:11,fontWeight:700,background:isHome?'#059669':'transparent',color:isHome?'white':'#9ca3af'}},'🏠 At Home')
@@ -270,12 +359,10 @@ function App() {
       React.createElement('div',{style:{display:'flex',background:'#1a0030',borderRadius:10,padding:4,marginBottom:12,gap:4}},
         DAYS.map(function(d,i){return React.createElement('button',{key:i,onClick:function(){setTab(i);},style:{flex:1,padding:'8px 2px',borderRadius:8,border:'none',cursor:'pointer',fontSize:10,fontWeight:700,background:tab===i?'#7c3aed':'transparent',color:tab===i?'white':'#9ca3af'}},d.label);})
       ),
-      React.createElement('div',{style:{background:'#1a0030',borderRadius:8,padding:'10px 14px',fontSize:12,color:isHome?'#4ade80':'#a78bfa',marginBottom:14,fontWeight:600}},
-        day.title+' · '+(isHome?day.homesub:day.sub)
-      ),
+      React.createElement('div',{style:{background:'#1a0030',borderRadius:8,padding:'10px 14px',fontSize:12,color:isHome?'#4ade80':'#a78bfa',marginBottom:14,fontWeight:600}},day.title+' · '+(isHome?day.homesub:day.sub)),
       exs.map(function(ex,i){
         var ckey=mode+'-'+tab+'-'+i,ekey=mode+'-'+tab+'-e-'+i,lkey=mode+'-'+tab+'-l-'+i;
-        return React.createElement(Card,{key:i,ex:ex,isDone:!!checked[ckey],isOpen:!!expanded[ekey],showLog:!!logOpen[lkey],isHome:isHome,
+        return React.createElement(Card,{key:i,ex:ex,isDone:!!checked[ckey],isOpen:!!expanded[ekey],showLog:!!logOpen[lkey],isHome:isHome,logDate:logDate,
           onCheck:function(){ck(ckey);},
           onExpand:function(ev){if(ev&&ev.stopPropagation)ev.stopPropagation();ek(ekey);},
           onToggleLog:function(){lk(lkey);},
