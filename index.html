@@ -7,7 +7,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <style>
-    * {box-sizing:border-box;margin:0;padding:0;}
+    *{box-sizing:border-box;margin:0;padding:0;}
     body{background:#0a0010;font-family:system-ui,sans-serif;}
     input,select,textarea{background:#0a0010;border:1px solid #3b0764;border-radius:6px;color:white;padding:6px 8px;font-size:12px;width:100%;outline:none;}
     input:focus,select:focus,textarea:focus{border-color:#c084fc;}
@@ -44,80 +44,414 @@
     .hist-day-header:active{opacity:0.8;}
     .hist-day-title{font-size:13px;font-weight:800;color:#c084fc;}
     .hist-day-toggle{font-size:11px;color:#a78bfa;font-weight:700;}
+    .week-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px;}
+    .week-btn{padding:8px 4px;border-radius:8px;border:1px solid #3b0764;cursor:pointer;font-size:11px;font-weight:700;text-align:center;transition:all 0.2s;}
   </style>
 </head>
 <body>
 <div id="root"></div>
 <script>
-var useState = React.useState;
-var useEffect = React.useEffect;
+var useState=React.useState,useEffect=React.useEffect;
 
 function todayStr(){var n=new Date(),y=n.getFullYear(),mo=n.getMonth()+1,d=n.getDate();return y+'-'+(mo<10?'0'+mo:mo)+'-'+(d<10?'0'+d:d);}
 function friendlyDate(iso){return new Date(iso+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});}
+function safeGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function safeSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function safeRemove(k){try{localStorage.removeItem(k);}catch(e){}}
+function safeKeys(prefix){var keys=[];try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.startsWith(prefix))keys.push(k);}}catch(e){}return keys;}
+function parseSets(s){if(!s)return 3;var m=s.match(/^(\d+)/);return m?Math.min(parseInt(m[1]),6):3;}
+function getInitialTab(){var d=new Date().getDay();if(d===1)return 0;if(d===2)return 1;if(d===3)return 2;if(d===4)return 3;return 0;}
 
-function safeGet(k){try{return localStorage.getItem(k);}catch(e){try{return sessionStorage.getItem(k);}catch(e2){return null;}}}
-function safeSet(k,v){try{localStorage.setItem(k,v);}catch(e){try{sessionStorage.setItem(k,v);}catch(e2){}}}
-function safeRemove(k){try{localStorage.removeItem(k);}catch(e){try{sessionStorage.removeItem(k);}catch(e2){}}}
-function safeKeys(prefix){
-  var keys=[];
-  try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.startsWith(prefix))keys.push(k);}}
-  catch(e){try{for(var i=0;i<sessionStorage.length;i++){var k=sessionStorage.key(i);if(k&&k.startsWith(prefix))keys.push(k);}}catch(e2){}}
-  return keys;
+// ─── EXERCISE LIBRARY ─────────────────────────────────────────────────────────
+// ALL exercises here are unique to Goddess — none overlap with the Glute Finisher app.
+// Glute Finisher owns: Hip Thrusts, RDL, Bulgarian Split Squat, Sumo Squat, Banded Abduction,
+//   Hip Bridges, Dead Bug, Side Plank, Curtsy Lunge, Step Ups, Clamshells, Single Leg DL
+
+var EX = {
+
+  // ── MONDAY: Hip Mobility & Flow ──────────────────────────────────────────
+  hipCircles:{name:"Standing Hip Circles",emoji:"🌀",area:"Hip Joint Mobility",
+    gymsets:"3 × 20 each dir",homesets:"3 × 20 each dir",
+    notes:"Trace big slow circles with your hips. Upper body stays completely still.",
+    homenotes:"Same at home. Bigger and slower = more benefit.",
+    tip:"The bigger and slower the circle, the more you open the hip joint.",
+    hometip:"Hold onto a wall if balance is tricky.",
+    howto:["Stand feet shoulder-width, soft bend in both knees","Push hips forward, roll right, push back, roll left — one full circle","20 circles one direction, then reverse","Shoulders stay still — only hips move"],
+    howtoHome:["Same — stand near a wall if needed"],
+    mod:"Losing balance? Hold onto a wall.",modHome:"Same.",
+    feel:"Hip joint opening up — not in your lower back.",feelHome:"Same."},
+
+  fig8Rolls:{name:"Figure 8 Hip Rolls",emoji:"8️⃣",area:"Hip Control & Flow",
+    gymsets:"3 × 45 sec",homesets:"3 × 45 sec",
+    notes:"Trace a continuous figure 8 with your hips. Both directions trained in each set.",
+    homenotes:"Same at home — pure bodyweight hip control.",
+    tip:"Slow figure 8s build control. Fast ones are expression. Do both.",
+    hometip:"The more you relax your upper body, the more expressive the figure 8 gets.",
+    howto:["Stand feet shoulder-width, soft knees","Trace a figure 8 — forward, around right, back, around left","Keep upper body still","Go slow for control then try faster passes","45 seconds continuous"],
+    howtoHome:["Same — no equipment needed"],
+    mod:"Losing the shape? Slow way down.",modHome:"Same.",
+    feel:"Hip joints, obliques, and deep core all moving together.",feelHome:"Same."},
+
+  hipWind:{name:"Hip Wind & Unwind",emoji:"🔄",area:"Hip Control & Range",
+    gymsets:"3 × 10 each dir",homesets:"3 × 10 each dir",
+    notes:"Wind hips in one direction then slowly uncoil. Torso stays tall and still the entire time.",
+    homenotes:"Same at home — no equipment.",
+    tip:"Think of winding a spring slowly and releasing it just as slowly.",
+    hometip:"Same.",
+    howto:["Stand feet shoulder-width, hands on hips","Slowly wind hips in one direction through the hip joint","When fully wound, slowly uncoil the other way","Torso stays tall"],
+    howtoHome:["Same — near a wall if needed"],
+    mod:"Lower back feels it? Reduce range.",modHome:"Same.",
+    feel:"Hip joint and deep core — not your lower back.",feelHome:"Same."},
+
+  kneelingHipWind:{name:"Kneeling Hip Winds",emoji:"🧎",area:"Hip Isolation — No Leg Momentum",
+    gymsets:"3 × 30 sec each dir",homesets:"3 × 30 sec each dir",
+    notes:"Kneeling removes leg momentum — everything comes purely from the hip joint. Much harder than standing.",
+    homenotes:"Same on a mat at home.",
+    tip:"Slow hula hoop from your knees. One full circle = 3–4 seconds.",
+    hometip:"Same — use folded blanket under knees.",
+    howto:["Kneel upright, knees hip-width, hands on thighs","Keep torso completely still","Push hips forward, sweep right, push back, sweep left — one circle","30 seconds one direction then reverse"],
+    howtoHome:["Same on mat — folded blanket under knees if needed"],
+    mod:"Balance issues? Sit on edge of bench.",modHome:"Sit on edge of sturdy chair.",
+    feel:"Hip joint and deep core — nothing in lower back.",feelHome:"Same."},
+
+  lateralHipShift:{name:"Lateral Hip Shifts",emoji:"↔️",area:"Hip Control & Obliques",
+    gymsets:"3 × 15 each side",homesets:"3 × 15 each side",
+    notes:"Shift weight side to side, exaggerate the push out. Upper body stays tall.",
+    homenotes:"Same — zero equipment.",
+    tip:"Push the hip OUT, not up. Lateral shift not a hip hike.",
+    hometip:"Add a slow hold at the furthest point for more control.",
+    howto:["Stand feet hip-width, hands on hips","Slowly shift weight right, push right hip out","Hold 1 second at end range, return to center","Repeat left — 15 each side"],
+    howtoHome:["Same — no equipment"],
+    mod:"Lower back feels it? Reduce range.",modHome:"Same.",
+    feel:"Outer hips and obliques. Upper body stays relaxed.",feelHome:"Same."},
+
+  deepButterflyStretch:{name:"Deep Butterfly Stretch",emoji:"🦋",area:"Inner Thighs & Hips — Recovery",
+    gymsets:"2 × 60 sec hold",homesets:"2 × 60 sec hold",
+    notes:"Sit tall, soles together, press knees gently toward floor. Never force — breathe into it.",
+    homenotes:"Sit on folded blanket if hips are tight.",
+    tip:"Sit on a folded mat — elevation helps knees drop naturally.",
+    hometip:"Same.",
+    howto:["Sit on mat, soles of feet together, knees fall out","Sit up as TALL as possible","Gently press knees toward floor with elbows — never force","Breathe in, exhale and let knees relax lower","60 seconds — let gravity do the work"],
+    howtoHome:["Same — sit on folded blanket if tight"],
+    mod:"Can't sit on floor? Sit on bench edge, cross ankle over opposite knee.",modHome:"Same.",
+    feel:"Gentle stretch in inner thighs and groin — never sharp pain.",feelHome:"Same."},
+
+  // ── TUESDAY: Twerk & Bounce Control ──────────────────────────────────────
+  gluteIsolateBounce:{name:"Glute Isolation Bounce",emoji:"🍑",area:"Glute Isolation — Body Control",
+    gymsets:"3 × 30 sec",homesets:"3 × 30 sec",
+    notes:"Feet hip-width, slight bend in knees. Isolate each cheek alternately — this is not a squat. Upper body stays still.",
+    homenotes:"Same — no equipment.",
+    tip:"Think of each cheek as an independent muscle you're turning on and off.",
+    hometip:"Same.",
+    howto:["Stand feet hip-width, soft bend in both knees","Isolate right cheek — squeeze and release","Then left cheek — squeeze and release","Build a rhythm — alternating, controlled","Upper body stays completely still","30 seconds continuous"],
+    howtoHome:["Same — no equipment needed"],
+    mod:"Not feeling the isolation? Slow way down — one cheek, hold, release.",modHome:"Same.",
+    feel:"Each glute independently — not both at once.",feelHome:"Same."},
+
+  singleCheekPop:{name:"Single Cheek Pop",emoji:"💥",area:"Glute Neuromuscular Control",
+    gymsets:"3 × 20 each side",homesets:"3 × 20 each side",
+    notes:"Pop one glute at a time with a sharp contraction. This is the foundation of twerk control — not speed, control.",
+    homenotes:"Same — no equipment.",
+    tip:"Sharp contraction, full release between each pop. Like a muscle blink.",
+    hometip:"Same.",
+    howto:["Stand feet shoulder-width, slight knee bend","Contract right glute sharply — fully release","20 pops right side then switch to left","The release between each is just as important as the contraction"],
+    howtoHome:["Same"],
+    mod:"Can't isolate yet? Practice the squeeze against a wall first.",modHome:"Same.",
+    feel:"One glute at a time — precise and deliberate.",feelHome:"Same."},
+
+  twerqSquat:{name:"Twerk Squat",emoji:"🔥",area:"Glutes & Hip Expression",
+    gymsets:"4 × 12",homesets:"4 × 12",
+    notes:"Squat down, then on the way up drive hips forward and add a sharp pop at the top. Rhythm matters.",
+    homenotes:"Same — bodyweight or add dumbbells.",
+    tip:"The pop at the top is the contraction you're training — make it deliberate, not a bounce.",
+    hometip:"Same.",
+    howto:["Feet slightly wider than hip-width, slight toe-out","Lower into a squat — controlled","On the way up, drive hips forward","Add a sharp glute squeeze pop at standing","Find a rhythm — down, up, pop","12 reps"],
+    howtoHome:["Same with or without weight"],
+    mod:"No pop yet? Just practice the hip drive at the top first.",modHome:"Same.",
+    feel:"Glutes popping at the top — not quads.",feelHome:"Same."},
+
+  donkeyKickPulse:{name:"Donkey Kick Pulse",emoji:"🦵",area:"Glute Maximus — Top Range",
+    gymsets:"3 × 20 each leg + 5 pulses",homesets:"3 × 20 each leg + 5 pulses",
+    notes:"On all fours, kick one leg back and up. Squeeze hard at the top then add 5 pulses before lowering.",
+    homenotes:"Same on a mat.",
+    tip:"The pulses at the top are where the real glute burn lives — do not skip them.",
+    hometip:"Same.",
+    howto:["On all fours — hands under shoulders, knees under hips","Lift one leg back and up, knee stays bent 90°","Squeeze glute HARD at the top","Add 5 small pulses — tiny up movements","Lower slowly — 20 reps then switch"],
+    howtoHome:["Same on mat"],
+    mod:"Lower back arching? Brace core harder and reduce range.",modHome:"Same.",
+    feel:"Directly in the lifted glute — especially during pulses.",feelHome:"Same."},
+
+  hipThrustPop:{name:"Hip Thrust Pulse & Pop",emoji:"⬆️",area:"Glute Expression & Control",
+    gymsets:"3 × 15 + 10 pulses",homesets:"3 × 15 + 10 pulses",
+    notes:"Drive up into bridge, hold at top, then 10 small pulses before lowering. No barbell — this is about control, not load. The booty app handles heavy hip thrusts.",
+    homenotes:"Same on a mat — bodyweight or light band across hips.",
+    tip:"Press the floor away with your heels — keeps glutes in contraction throughout.",
+    hometip:"Add a resistance band above hips for more burn.",
+    howto:["Sit on floor, upper back against bench","Feet flat, hip-width apart","Drive hips UP — squeeze at top","Hold the top position","10 small pulses — tiny up-downs","Then lower slowly"],
+    howtoHome:["Back against bench or couch","Same — band across hips for resistance"],
+    mod:"Hips dropping on one side? Focus on both heels pressing equally.",modHome:"Same.",
+    feel:"Glutes at peak contraction — lower back should feel nothing.",feelHome:"Same."},
+
+  hipFlexorStretch:{name:"Hip Flexor Stretch",emoji:"🧘",area:"Hip Flexors — Recovery",
+    gymsets:"2 × 60 sec each side",homesets:"2 × 60 sec each side",
+    notes:"Low lunge on mat, sink hips forward and down. Essential daily recovery.",
+    homenotes:"Same — use mat or folded towel under back knee.",
+    tip:"Squeeze the BACK glute while you sink forward — deepens the stretch dramatically.",
+    hometip:"Same.",
+    howto:["Kneel on RIGHT knee, step LEFT foot forward, knee over ankle","Sit up tall — torso upright","Gently tuck tailbone — feel stretch in front of right hip","Hold and breathe 60 seconds, switch sides"],
+    howtoHome:["Same on mat"],
+    mod:"Struggling to kneel on hard floor? Double up the mat.",modHome:"Stand in a lunge instead.",
+    feel:"Stretch in front of the hip of your back leg.",feelHome:"Same."},
+
+  // ── WEDNESDAY: Core Stamina — Goddess-Specific Movements ────────────────
+  // NOTE: Dead Bug and Side Plank are in the Glute Finisher waist circuit — not repeated here.
+  plankHipDip:{name:"Plank Hip Dips",emoji:"🌀",area:"Obliques — Rotational",
+    gymsets:"3 × 15 each side",homesets:"3 × 15 each side",
+    notes:"From forearm plank, rotate hips to dip toward the floor on each side. Oblique-focused, not glute-focused.",
+    homenotes:"Same on a mat.",
+    tip:"Control the dip — momentum doesn't build the waist.",
+    hometip:"Same.",
+    howto:["Forearm plank — elbows under shoulders","Rotate hips to dip toward right — controlled","Drive back to center, dip left","15 each side per set"],
+    howtoHome:["Same on mat"],
+    mod:"Full plank too hard? Drop to knees.",modHome:"Same.",
+    feel:"Obliques on the dipping side — not your glutes.",feelHome:"Same."},
+
+  bearCrawlHold:{name:"Bear Crawl Hold",emoji:"🐻",area:"Deep Core & Anti-Rotation",
+    gymsets:"3 × 30 sec",homesets:"3 × 30 sec",
+    notes:"Hover knees 1 inch off floor — abs and hips braced. Harder than it looks. Different from any glute finisher exercise.",
+    homenotes:"Same on a mat.",
+    tip:"Push the floor away with your hands — locks in your shoulder and core together.",
+    hometip:"Same.",
+    howto:["On all fours, hands under shoulders, knees under hips","Tuck toes under and LIFT knees one inch off floor","Hold — abs braced, hips braced, back flat","Breathe normally for 30 seconds"],
+    howtoHome:["Same on mat"],
+    mod:"Lower back arching? Focus on pressing the floor away.",modHome:"Same.",
+    feel:"Deep abs and hip flexors working to stay still — not glutes.",feelHome:"Same."},
+
+  hollowBody:{name:"Hollow Body Hold",emoji:"🌙",area:"Full Core — Endurance",
+    gymsets:"3 × 20–30 sec hold",homesets:"3 × 20–30 sec hold",
+    notes:"Arms overhead, legs extended, lower back flat — full anterior core challenge.",
+    homenotes:"Same at home.",
+    tip:"Pull your belly button toward the floor — that cue locks in the hollow position.",
+    hometip:"Same.",
+    howto:["Lie on mat, press lower back into floor","Extend arms overhead, legs out straight","Lift arms, head, shoulders and legs slightly off floor","Lower back stays COMPLETELY FLAT","Hold and breathe"],
+    howtoHome:["Same on mat"],
+    mod:"Struggling? Bend knees and keep feet flat. Build to straight legs.",modHome:"Same.",
+    feel:"Entire core — upper abs, lower abs, sides — all at once.",feelHome:"Same."},
+
+  pallofPress:{name:"Pallof Press Hold",emoji:"⚡",area:"Anti-Rotation Core",
+    gymsets:"3 × 10 each side",homesets:"3 × 10 each side",
+    notes:"Band anchored at chest height. Press out and hold 3 seconds — core fights the rotation. Unique to Goddess.",
+    homenotes:"Band anchored in a doorframe.",
+    tip:"The further from the anchor, the harder. Move feet out to progress.",
+    hometip:"Same.",
+    howto:["Anchor band at chest height to rack or post","Stand sideways to anchor, band at chest","Press band straight out in front — hold 3 seconds","Slowly return to chest — 1 rep","10 reps then turn and switch sides"],
+    howtoHome:["Band in doorframe at chest height","Same press and hold"],
+    mod:"Band too strong? Move closer to anchor.",modHome:"Same.",
+    feel:"Core bracing against rotation — anti-rotation is the goal.",feelHome:"Same."},
+
+  seatedTwist:{name:"Seated Twist Hold",emoji:"🌪️",area:"Obliques & Spinal Rotation",
+    gymsets:"2 × 30 sec each side",homesets:"2 × 30 sec each side",
+    notes:"Sit on floor, knees bent, lean back slightly until abs engage. Rotate torso to one side and hold.",
+    homenotes:"Same anywhere — floor, mat, couch edge.",
+    tip:"The lean-back activates the core — sit straight and you lose most of the benefit.",
+    hometip:"Same.",
+    howto:["Sit on floor, knees bent, feet flat","Lean back slightly until abs engage","Clasp hands at chest height","Rotate torso to one side and hold 30 seconds","Switch sides"],
+    howtoHome:["Same — no equipment needed"],
+    mod:"Back discomfort? Reduce the lean.",modHome:"Same.",
+    feel:"Obliques immediately on the rotated side.",feelHome:"Same."},
+
+  supineHipRock:{name:"Supine Hip Rock",emoji:"🔁",area:"Hip Mobility — Floor Based",
+    gymsets:"3 × 20 reps",homesets:"3 × 20 reps",
+    notes:"Lie on back, knees bent, feet flat. Rock knees side to side in a controlled windshield wiper motion. This is hip mobility, not core.",
+    homenotes:"Same on a mat.",
+    tip:"The slower the rock, the more hip mobility benefit. This is not a speed drill.",
+    hometip:"Same.",
+    howto:["Lie on back, knees bent, feet flat, arms out to sides","Slowly let both knees fall to the RIGHT — only as far as hips stay grounded","Slowly return to center","Fall to the LEFT — return","20 total reps — 10 each side"],
+    howtoHome:["Same on mat"],
+    mod:"Hips lifting off floor? Reduce the range.",modHome:"Same.",
+    feel:"Hip joint gently rotating — a release, not an effort.",feelHome:"Same."},
+
+  // ── THURSDAY: Inner Thigh & Pelvic Floor ─────────────────────────────────
+  seatedInnerThigh:{name:"Seated Inner Thigh Machine",emoji:"🟣",area:"Inner Thighs — Adductors",
+    gymsets:"3 × 20 reps",homesets:"3 × 20 reps",
+    notes:"Adductor machine — squeeze legs TOGETHER. Control the opening. Not in the Glute Finisher.",
+    homenotes:"Band around knees, seated — squeeze knees together against band.",
+    tip:"Control the opening — do not let machine push legs apart. The slow open is half the exercise.",
+    hometip:"Band should create real resistance — heavy band if light feels easy.",
+    howto:["Sit in inner thigh machine — pads on INSIDE of knees","Set range so legs start comfortably open","Sit tall","Slowly squeeze both legs TOGETHER","Hold 1 second","Slowly open back — 2–3 seconds"],
+    howtoHome:["Sit in chair, band just above knees","Squeeze knees TOGETHER against resistance","Hold 1 second, slowly release — 20 reps"],
+    mod:"Uncomfortable range? Reduce it.",modHome:"No band? Squeeze knees against your hands.",
+    feel:"Burning in inner thighs — adductors only.",feelHome:"Inner thighs and outer hip together."},
+
+  innerThighPulse:{name:"Inner Thigh Pulse — Lying",emoji:"🌸",area:"Inner Thighs — Isolation",
+    gymsets:"3 × 30 sec each leg",homesets:"3 × 30 sec each leg",
+    notes:"Lie on side, bottom leg straight. Lift bottom leg up toward top leg — pulse at the top. Purely inner thigh.",
+    homenotes:"Same on a mat.",
+    tip:"Keep your top foot on the floor in front of you for balance — not stacked on the bottom leg.",
+    hometip:"Same.",
+    howto:["Lie on your side, bottom leg straight","Top knee bent, top foot flat on floor in front","Lift bottom leg up toward ceiling — 6–8 inches","Pulse at the top — small quick lifts — 30 seconds","Switch sides"],
+    howtoHome:["Same on mat"],
+    mod:"Hip flexors taking over? Slow down and focus on the inner thigh squeezing.",modHome:"Same.",
+    feel:"Inner thigh of the bottom leg — nothing else.",feelHome:"Same."},
+
+  kegelPulse:{name:"Kegels — Quick Pulses",emoji:"✨",area:"Pelvic Floor — Activation",
+    gymsets:"3 × 20 pulses",homesets:"3 × 20 pulses",
+    notes:"Contract and release pelvic floor quickly. Do between exercises while seated.",
+    homenotes:"Anywhere — couch, floor, chair.",
+    tip:"Think of blinking your pelvic floor — quick, rhythmic, deliberate.",
+    hometip:"Same.",
+    howto:["Sit comfortably","Locate pelvic floor — the muscles used to stop urination","Contract quickly and firmly","Release FULLY between each pulse","20 pulses — breathe normally"],
+    howtoHome:["Seated, standing, or lying — whatever is comfortable"],
+    mod:"Struggling to locate muscles? Lie on a mat.",modHome:"Same.",
+    feel:"Subtle internal lift at the base of your pelvis.",feelHome:"Same."},
+
+  kegelHold:{name:"Kegels — Long Hold",emoji:"🔒",area:"Pelvic Floor — Strength",
+    gymsets:"3 × 10 sec hold × 10",homesets:"3 × 10 sec hold × 10",
+    notes:"Squeeze and hold 10 full seconds, fully release. The full release is non-negotiable.",
+    homenotes:"Seated or lying.",
+    tip:"A full release after each hold prevents tension — never skip it.",
+    hometip:"Same.",
+    howto:["Sit between exercises","Contract pelvic floor firmly","Hold 10 full seconds — count it","FULLY release — let everything go","Rest 5 seconds, repeat 10 times"],
+    howtoHome:["Seated or lying — same"],
+    mod:"Struggling to hold 10 sec? Start with 5 sec holds.",modHome:"Same.",
+    feel:"Firm engagement during hold, complete letting-go after.",feelHome:"Same."},
+
+  sumoSquatHold:{name:"Sumo Squat Isometric Squeeze",emoji:"🦵",area:"Inner Thighs & Pelvic Floor — Combined",
+    gymsets:"3 × 10 sec squeeze × 10",homesets:"3 × 10 sec squeeze × 10",
+    notes:"Sumo squat position — hold it and squeeze inner thighs toward each other without moving. Isometric only. Different goal from the Glute Finisher's sumo squat.",
+    homenotes:"Same without dumbbell.",
+    tip:"Like trying to close your legs while they stay wide open. Pure isometric.",
+    hometip:"Same.",
+    howto:["Feet wide, toes out, hold dumbbell at chest","Lower into sumo squat position","Hold — do not stand up","Squeeze inner thighs toward each other isometrically","10 seconds, fully release","10 squeezes per set"],
+    howtoHome:["Same without dumbbell — hover above chair if needed"],
+    mod:"Can't hold position? Sit on chair edge, legs wide, and do seated squeeze.",modHome:"Chair version is the mod.",
+    feel:"Deep inner thigh burn — distinct from glute work.",feelHome:"Same."},
+
+  frogPump:{name:"Frog Pump",emoji:"🐸",area:"Inner Thighs & Pelvic Floor — Combo",
+    gymsets:"4 × 20 reps",homesets:"4 × 20 reps",
+    notes:"On back, soles of feet together, drive hips up squeezing inner thighs AND glutes AND pelvic floor simultaneously. Triple activation.",
+    homenotes:"Same on mat — add band above knees for more resistance.",
+    tip:"The soles-together position forces inner thighs and pelvic floor to work together in a way standard hip thrusts don't.",
+    hometip:"Band above knees makes this significantly harder.",
+    howto:["Lie on back, soles of feet together so knees fall out","Drive hips UP — squeeze glutes, inner thighs, and pelvic floor all together","Hold top 1 second","Lower slowly — 20 reps"],
+    howtoHome:["Same on mat — band above knees for resistance"],
+    mod:"Hip flexors dominating? Widen the feet slightly.",modHome:"Same.",
+    feel:"Inner thighs and pelvic floor firing together — unique feeling.",feelHome:"Same."},
+
+  bridgePelvicFloor:{name:"Bridge with Pelvic Floor Hold",emoji:"🌷",area:"Pelvic Floor & Glute Integration",
+    gymsets:"3 × 10 reps",homesets:"3 × 10 reps",
+    notes:"Glute bridge — but the FOCUS is the simultaneous pelvic floor contraction at the top. The Glute Finisher uses bridges for glute load. Here the intention is the pelvic floor coordination.",
+    homenotes:"Same on mat — bodyweight only.",
+    tip:"Double contraction — glutes AND pelvic floor together — is the most powerful combo here.",
+    hometip:"Same.",
+    howto:["Lie on back, feet flat, knees bent","Drive hips up into bridge","At TOP — squeeze glutes AND contract pelvic floor simultaneously","Hold BOTH for 3 full seconds","Lower slowly — fully release everything at bottom","10 reps"],
+    howtoHome:["Same on mat"],
+    mod:"Can't hold 3 seconds? Start with 1 second and build.",modHome:"Partial bridge still activates both.",
+    feel:"Glutes working AND subtle internal pelvic floor lift at the top.",feelHome:"Same."},
+
+  // ── PHASE 2+ SWAPS ──────────────────────────────────────────────────────
+  hipFigure4Stretch:{name:"Figure 4 Hip Stretch — Active",emoji:"🔺",area:"Hip External Rotation & Piriformis",
+    gymsets:"3 × 45 sec each side",homesets:"3 × 45 sec each side",
+    notes:"Lie on back, cross ankle over opposite knee, flex foot. Actively pull knee toward chest. Deep hip rotator stretch.",
+    homenotes:"Same on mat.",
+    tip:"Flex your foot hard — this protects the knee and deepens the stretch.",
+    hometip:"Same.",
+    howto:["Lie on back, knees bent","Cross RIGHT ankle over LEFT knee","Flex right foot","Pull LEFT knee toward chest — right hip opens","Hold 45 seconds, switch"],
+    howtoHome:["Same on mat"],
+    mod:"Too intense? Don't pull the knee — just let the weight of the leg do the work.",modHome:"Same.",
+    feel:"Deep in the outer hip and piriformis of the crossed leg.",feelHome:"Same."},
+
+  deepSquatHipOpener:{name:"Deep Squat Hip Opener",emoji:"🏮",area:"Hip Mobility — Deep Range",
+    gymsets:"2 × 2 min hold",homesets:"2 × 2 min hold",
+    notes:"Hold the bottom of a squat, using elbows to push knees out. Breathing is the exercise — each exhale you sink deeper.",
+    homenotes:"Same — hold onto a door frame or squat rack for support.",
+    tip:"Do not force depth — breathe and let gravity do the work over 2 minutes.",
+    hometip:"Hold onto a sturdy surface for support.",
+    howto:["Stand feet wider than hip-width, toes out","Lower to the bottom of a squat","Place elbows on inner knees and gently push out","Breathe in deeply — exhale and relax deeper","Hold 2 minutes total"],
+    howtoHome:["Same — hold door frame if needed"],
+    mod:"Heels coming up? Stand on a folded mat to elevate them.",modHome:"Same.",
+    feel:"Inner thighs, hip flexors, and hip rotators all stretching.",feelHome:"Same."},
+
+  windmillStretch:{name:"Windmill Hip Stretch",emoji:"🌬️",area:"Hip Mobility & Lateral Stretch",
+    gymsets:"3 × 10 each side",homesets:"3 × 10 each side",
+    notes:"Stand feet wide, reach one hand down toward the opposite foot while the other arm reaches up. Hip and side body opening.",
+    homenotes:"Same — no equipment.",
+    tip:"Keep both legs straight — the stretch is in the hip and side, not hamstring.",
+    hometip:"Same.",
+    howto:["Stand feet wide, arms out to sides","Slowly reach right hand down toward left foot","Left arm reaches straight up — look up at the top hand","Return to standing — 10 each side"],
+    howtoHome:["Same"],
+    mod:"Hamstrings too tight? Bend both knees slightly.",modHome:"Same.",
+    feel:"Side body and outer hip of the reaching side.",feelHome:"Same."},
+
+  seatedSpinalRotation:{name:"Seated Spinal Rotation",emoji:"🌪️",area:"Spinal Mobility — Thoracic",
+    gymsets:"3 × 10 each side",homesets:"3 × 10 each side",
+    notes:"Sit tall on bench or floor, rotate slowly through your thoracic spine — not lumbar. Creates the twist and flow that goddess movement depends on.",
+    homenotes:"Same on floor or chair edge.",
+    tip:"Think about rotating from your mid-back, not from your lower back or neck.",
+    hometip:"Same.",
+    howto:["Sit tall on bench, feet flat","Arms crossed at chest or hands on shoulders","Slowly rotate torso right as far as comfortable","Hold 1 second, return to center — then left","10 each side — slow and deliberate"],
+    howtoHome:["Same on chair or floor"],
+    mod:"Lower back feeling it? Reduce the range and focus on the mid-back only.",modHome:"Same.",
+    feel:"Mid-back rotating — spine feels more mobile after.",feelHome:"Same."}
+};
+
+// ─── 12-WEEK PROGRAM ─────────────────────────────────────────────────────────
+var PROGRAM = {
+  mon:{
+    p1:['hipCircles','fig8Rolls','hipWind','kneelingHipWind','lateralHipShift','deepButterflyStretch'],
+    p2:['hipCircles','fig8Rolls','hipWind','kneelingHipWind','deepSquatHipOpener','deepButterflyStretch'],
+    p3:['hipCircles','fig8Rolls','windmillStretch','kneelingHipWind','deepSquatHipOpener','deepButterflyStretch']
+  },
+  tue:{
+    p1:['gluteIsolateBounce','singleCheekPop','twerqSquat','donkeyKickPulse','hipThrustPop','hipFlexorStretch'],
+    p2:['gluteIsolateBounce','singleCheekPop','twerqSquat','donkeyKickPulse','hipThrustPop','hipFigure4Stretch'],
+    p3:['gluteIsolateBounce','singleCheekPop','twerqSquat','donkeyKickPulse','hipThrustPop','hipFigure4Stretch']
+  },
+  wed:{
+    p1:['plankHipDip','bearCrawlHold','hollowBody','pallofPress','seatedTwist','supineHipRock'],
+    p2:['plankHipDip','bearCrawlHold','hollowBody','pallofPress','seatedTwist','seatedSpinalRotation'],
+    p3:['plankHipDip','bearCrawlHold','hollowBody','pallofPress','seatedSpinalRotation','supineHipRock']
+  },
+  thu:{
+    p1:['seatedInnerThigh','innerThighPulse','kegelPulse','kegelHold','sumoSquatHold','bridgePelvicFloor'],
+    p2:['seatedInnerThigh','innerThighPulse','kegelPulse','kegelHold','frogPump','bridgePelvicFloor'],
+    p3:['seatedInnerThigh','innerThighPulse','kegelPulse','kegelHold','frogPump','bridgePelvicFloor']
+  }
+};
+
+var DAY_LABELS=['MON','TUE','WED','THU'];
+var DAY_KEYS=['mon','tue','wed','thu'];
+var DAY_TITLES=['🌀 Hip Mobility & Flow','🔥 Twerk & Bounce Control','💪 Core Stamina','✨ Inner Thigh & Pelvic Floor'];
+var DAY_SUBS_GYM=['Hip joints · Flow · No heavy lifting','Body control · Expression · Isolation','Anti-rotation · Endurance · Deep core','Adductors · Pelvic floor · Precision'];
+var DAY_SUBS_HOME=['Zero equipment · Feet planted · Go slow','Bodyweight control · Floor & standing','Mat only · Deep core work','Band + bodyweight · Total control'];
+
+function getPhaseKey(w){return w<=4?'p1':w<=8?'p2':'p3';}
+function getPhaseLabel(w){return w<=4?'Foundation':w<=8?'Build':'Peak';}
+function getPhaseColor(w){return w<=4?'#7c3aed':w<=8?'#059669':'#db2777';}
+
+function getExForWeekDay(w,dayKey){
+  var phase=getPhaseKey(w);
+  var keys=[].concat(PROGRAM[dayKey][phase]);
+  var offset=(w-1)%4;
+  if(offset>0){var mid=keys.slice(1,keys.length-1);for(var i=0;i<offset;i++){mid.unshift(mid.pop());}keys=[keys[0]].concat(mid).concat([keys[keys.length-1]]);}
+  return keys.map(function(k){return EX[k];});
 }
 
-function getInitialTab(){var d=new Date().getDay();if(d===1)return 0;if(d===2)return 1;if(d===3)return 2;if(d===4)return 3;return 0;}
-function parseSets(setsStr){if(!setsStr)return 3;var m=setsStr.match(/^(\d+)/);return m?Math.min(parseInt(m[1]),6):3;}
-
-var DAYS = [
-  { label:"MON", title:"🌀 Hip Mobility & Control", sub:"Machines & cables · Full range of motion", homesub:"Zero equipment · Feet planted · Go slow", exercises:[
-    {name:"Cable Hip Circle",area:"Hip Mobility & Control",emoji:"🌀",gymsets:"3 × 15 each direction",homesets:"3 × 20 each direction",notes:"Attach ankle cuff to low cable. Stand sideways, swing leg in slow controlled circles.",homenotes:"Feet planted the whole time. Upper body stays completely still.",tip:"Go slow — fast circles lose the mobility benefit.",hometip:"The bigger and slower the circle, the more you feel the hip joint opening up",howto:["Attach ankle cuff to the low cable pulley","Stand sideways to the machine, hand lightly on it for balance","Slowly swing your leg forward in a circle — up, around to the side, back, and down","15 circles forward, then turn around and do 15 backward","Upper body stays still — only the working leg moves"],howtoHome:["Stand with feet shoulder-width apart, slight bend in both knees","Slowly push hips forward, roll to the right, push back, roll to the left — one full circle","20 circles one direction, then reverse","Keep shoulders and chest completely still"],mod:"No cable? Do standing hip circles with no weight.",modHome:"Struggling with balance? Hold onto a wall or chair.",feel:"Hip joint opening up and hip flexors and glutes both engaging through the circle.",feelHome:"Hip joints and outer hips. If you feel it in your lower back, make the circles smaller."},
-    {name:"Cable Pull-Through",area:"Hip Hinge & Glutes",emoji:"🔗",gymsets:"3 × 15 reps",homesets:"3 × 10 slow waves",notes:"Low cable between legs, hinge forward and drive hips back through. Teaches the hip hinge pattern.",homenotes:"Slow front-to-back pelvis roll. Feet stay planted.",tip:"Think of it as pushing the wall behind you with your hips — not squatting down",hometip:"Think of drawing a slow oval with your hips — small is fine, control matters",howto:["Set cable to lowest position, attach rope handle","Stand facing away from the machine, feet shoulder-width","Reach back between your legs and grab the rope","Hinge forward at your hips — push them back","Drive your hips FORWARD to standing — squeeze glutes hard at the top","Keep your back flat throughout — never round"],howtoHome:["Stand feet hip-width, knees soft, hands on hips","Slowly tuck pelvis forward and under","Let hips rise slightly, then slowly release back","Make it slow and flowing — not jerky"],mod:"New to this? Practice the hip hinge first with no weight.",modHome:"Struggling? Do just the pelvic tilt for a week first.",feel:"Glutes and hamstrings — especially the squeeze at the top.",feelHome:"Flow through whole lower body — abs, hips, and glutes gently engaged."},
-    {name:"Dumbbell Romanian Deadlift",area:"Hamstrings, Glutes & Hip Hinge",emoji:"🏋️",gymsets:"3 × 12 reps",homesets:"3 × 15 reps",notes:"Dumbbells in hands, hinge forward keeping back flat, feel the hamstring stretch, drive back up.",homenotes:"Standing, tuck and release pelvis slowly. The foundation movement.",tip:"Lower back stays completely flat — if it rounds, the weight is too heavy",hometip:"Master this and all hip movement opens up",howto:["Hold a dumbbell in each hand, feet hip-width apart","Soft bend in both knees — they stay at this angle throughout","Hinge forward from your hips — push them back as you lower","Lower until you feel a stretch in your hamstrings","Drive your hips forward to return to standing","Squeeze glutes firmly at the top"],howtoHome:["Stand feet hip-width, slight bend in both knees","Slowly tuck your pelvis under — like tucking your tailbone toward the floor","Hold the tuck for 1 second, slowly release back to neutral"],mod:"Struggling with back flatness? Reduce the range of motion.",modHome:"Try lying on your back with knees bent and press lower back into the floor.",feel:"Deep stretch in hamstrings on the way down and glutes contracting hard at the top.",feelHome:"Lower abs engage when you tuck. Your deep core activating."},
-    {name:"Hip Abductor Machine",area:"Glute Medius & Hip Dips",emoji:"🦵",gymsets:"3 × 20 reps",homesets:"3 × 20 reps (10 each side)",notes:"Seated abductor machine — push legs apart against resistance.",homenotes:"Stand tall, drop one hip down at a time — slow and controlled. Feet stay planted.",tip:"Control the return — do not let the machine slam your legs back in.",hometip:"This is a DROP not a sway — let one hip fall toward the floor",howto:["Sit in the hip abductor machine, adjust so knees and thighs are supported","Sit tall — back straight, not slouched","Slowly push both legs APART against the pads","Push as wide as the machine allows — hold for 1 second","Slowly return legs to starting position — take 2 to 3 seconds"],howtoHome:["Stand with feet shoulder-width apart, soft bend in knees, hands on hips","Slowly drop your RIGHT hip down toward the floor","Hold the drop for 1 second, return to center","Alternate sides slowly"],mod:"Machine feels uncomfortable? Try cable hip abduction standing instead.",modHome:"Struggling with balance? Stand next to a wall.",feel:"Outer glutes — the side of your butt. This is the glute medius that fills hip dips.",feelHome:"Outer hips and the sides of your waist."},
-    {name:"Kneeling Hip Winds",area:"Hip Control & Core",emoji:"🧎",gymsets:"3 × 30 seconds each direction",homesets:"3 × 30 seconds each direction",notes:"On knees, wind hips in slow full circles. Kneeling removes leg momentum so everything comes purely from the hip joint.",homenotes:"Same exercise at home — use a yoga mat or folded towel under knees.",tip:"Slow hula hoop from your knees — push forward, sweep side, push back, sweep other side",hometip:"Kneeling removes leg momentum — everything comes purely from the hip",howto:["Grab a mat and kneel upright, knees hip-width apart","Place both hands on your thighs or waist","Keep your torso completely tall and still","Slowly push hips forward, sweep to the right, push back, sweep to the left — one full circle","One full circle should take about 3 to 4 seconds","30 seconds one direction, then switch and reverse"],howtoHome:["Kneel upright on your mat, knees hip-width apart","Place both hands on your thighs or waist","Keep torso tall and completely still","Slowly push hips forward, sweep right, push back, sweep left","Go slow — 3 to 4 seconds per circle"],mod:"Struggling to balance kneeling? Sit on the edge of a gym bench instead.",modHome:"Struggling? Sit on the edge of a sturdy chair.",feel:"Hip joints and deep core. NOT in your lower back.",feelHome:"Hip joints and deep core. Not in your lower back."},
-    {name:"Deep Butterfly Stretch",area:"Inner Thighs & Hips",emoji:"🦋",gymsets:"2 × 60 sec hold",homesets:"2 × 60 sec hold",notes:"Finish the day with this. Sit tall, press knees gently toward floor. Breathe into the stretch — never force it.",homenotes:"Sit tall, press knees toward floor gently. Breathe into the stretch.",tip:"Sit on a folded mat if hips are tight — elevation helps knees drop naturally",hometip:"Sit on a folded blanket if hips are tight",howto:["Sit on a mat, soles of feet together so knees fall out to the sides","Sit up as TALL as possible","Gently press knees toward the floor with your elbows — never force","Breathe in deeply, and as you breathe out let your knees relax a little lower","Hold for 60 seconds — let gravity do the work"],howtoHome:["Sit on your mat, soles of feet together, knees falling out","Sit up as tall as possible","Gently press knees toward floor with elbows","Breathe deeply — each exhale let knees relax lower","Hold 60 seconds — never force"],mod:"Struggling to sit on the floor? Sit on the edge of a bench, cross one ankle over the opposite knee.",modHome:"Sit on the edge of a chair, cross one ankle over the opposite knee.",feel:"Gentle stretch in your inner thighs and groin. Never sharp pain.",feelHome:"Gentle stretch in your inner thighs and groin."}
-  ]},
-  { label:"TUE", title:"🔥 Glute & Hip Control", sub:"Cables & machines · Real resistance", homesub:"Slow isolation · Feet stay planted", exercises:[
-    {name:"Cable Kickback",area:"Glutes — Isolation & Control",emoji:"🍑",gymsets:"3 × 15 each leg",homesets:"3 × 10 reps",notes:"Ankle cuff on low cable, face the machine, kick one leg back and squeeze at the top.",homenotes:"Push hips back slowly, hold for 2 seconds, return. Feet stay planted.",tip:"Squeeze hard at the top and hold for 1 second — that contraction is where the glute work happens",hometip:"The HOLD is the whole point — slow and held builds the muscle control you need",howto:["Attach ankle cuff to low cable, face the machine","Stand on your non-working leg, soft bend in the knee","Slowly kick your working leg BACK — keep it straight or slight bend","Squeeze your glute hard at the top — hold 1 second","Slowly return the leg forward — control the return, do not swing","15 reps on one leg, then switch"],howtoHome:["Stand feet shoulder-width, toes slightly out, soft knee bend","Slowly push hips BACK like sitting in a chair — stop halfway","Hold for 2 full seconds, gently squeeze glutes","Slowly return to standing"],mod:"Struggling with balance? Stand closer to the machine and hold more firmly.",modHome:"Struggling with balance? Hold onto the back of a sturdy chair.",feel:"Directly in the glute of the working leg — especially at the top when you squeeze.",feelHome:"Glutes and the back of your thighs."},
-    {name:"Cable Hip Abduction",area:"Glute Medius — Hip Dip Filler",emoji:"↗️",gymsets:"3 × 15 each leg",homesets:"3 × 15 each side",notes:"Ankle cuff on low cable, stand sideways to machine, lift leg out to the side.",homenotes:"Stand tall, lift one leg out to the side slowly, lower slowly.",tip:"Do not let your hip hike up as you lift — keep hips level and let the leg do all the work",hometip:"The LOWERING phase is just as important as the lifting — resist gravity on the way down",howto:["Attach ankle cuff to low cable, strap onto the ankle furthest from the machine","Stand sideways to the machine, hand lightly on it for balance","Slowly lift the working leg out to the side — keep it straight","Lift only as high as your hip stays level","Hold at the top for 1 second, slowly lower back down","15 reps, then turn around and switch legs"],howtoHome:["Stand next to a wall or chair for balance","Slowly lift leg out to the SIDE — only as high as hip stays level","Pause at top for 1 second, slowly lower back down"],mod:"Hip keeps hiking? Reduce the height of your lift.",modHome:"No ankle weight? Bodyweight alone is effective.",feel:"Outer glute of the working leg — the side of your butt. This is the hip dip muscle.",feelHome:"Outer hip and side of your glute."},
-    {name:"Dumbbell Sumo Squat",area:"Inner Thighs & Glutes",emoji:"🏋️",gymsets:"3 × 15 reps",homesets:"3 × 30 sec hold + 10 pulses",notes:"Hold one heavy dumbbell at chest, feet wide, toes out — squat deep.",homenotes:"Wide stance squat, hold at the bottom, then small pulses. Feet stay planted.",tip:"Push your knees OUT toward your toes as you lower — this opens the inner thighs and protects the knees",hometip:"The wider your feet, the more inner thigh you feel. The lower you sit, the more glute you feel.",howto:["Hold one dumbbell vertically at your chest with both hands","Stand with feet wider than shoulder-width, toes pointed out at 45 degrees","Sit your hips back and DOWN into the squat","Push knees out toward your toes — do not let them cave in","Lower until thighs are close to parallel to the floor","Drive through your heels to stand back up, squeeze glutes at the top"],howtoHome:["Feet wider than shoulder-width, toes out at 45 degrees","Slowly lower into a squat — push knees toward toes","Hold position for 30 seconds — breathe steadily","After hold, do 10 small pulses — lower an inch, rise an inch"],mod:"Struggling with depth? Hold onto a squat rack with one hand.",modHome:"Struggling to hold? Use a chair behind you.",feel:"Inner thighs and glutes both working. If you only feel your quads, sit your hips further back.",feelHome:"Inner thighs burning during hold, glutes burning during pulses."},
-    {name:"Cable Hip Extension",area:"Glutes & Hip Drive",emoji:"🔗",gymsets:"3 × 15 each leg",homesets:"3 × 30 seconds each direction",notes:"Ankle cuff on low cable, face machine, drive leg straight back and down.",homenotes:"Hands lightly on wall, move hips side to side without moving upper body.",tip:"At full extension squeeze your glute like you are trying to crack a walnut",hometip:"If your shoulders move, you are doing it wrong — the wall will show you immediately",howto:["Attach ankle cuff to low cable, face the machine","From neutral standing, slowly drive your working leg BACK and DOWN","Keep leg fairly straight — slight bend is fine","At full extension, squeeze glute HARD — hold 1 second","Slowly return leg to neutral — do not swing forward","Keep hips square — do not rotate your body"],howtoHome:["Stand facing a wall arm's length away, hands lightly on wall","Slowly push hips to the RIGHT — just hips, nothing else","Return to center, push hips to the LEFT","Find slow steady rhythm — right, center, left, center"],mod:"Feeling it in your lower back? Reduce the range.",modHome:"No wall? Use the back of a sturdy chair instead.",feel:"Deep in the glute of the working leg. Back should feel nothing.",feelHome:"Outer hips and obliques. Upper body should feel relaxed."},
-    {name:"Leg Press — Wide High Foot",area:"Glutes & Inner Thighs",emoji:"🦵",gymsets:"3 × 15 reps",homesets:"3 × 10 slow waves",notes:"On the leg press machine, place feet HIGH and WIDE on the platform.",homenotes:"Slow front-to-back pelvis roll. Connects all hip movements together.",tip:"High and wide on the plate is the goddess placement — it changes the entire muscle focus",hometip:"Think of drawing a slow oval with your hips",howto:["Sit in the leg press machine","Place feet HIGH on the platform — upper half","Place feet WIDE — outside edges, toes pointed slightly out","Slowly lower the platform toward you — bend knees to about 90 degrees","Push through your HEELS to press back up","Squeeze glutes at full extension — do not lock knees"],howtoHome:["Stand feet hip-width, knees soft, hands on hips","Slowly tuck pelvis forward and under","Slowly release back — that is one wave","Make it slow and flowing — not jerky"],mod:"New to this foot placement? Start with lighter weight than usual.",modHome:"Struggling? Do just the pelvic tilt first.",feel:"Glutes and inner thighs — very different from a regular leg press.",feelHome:"Flow through whole lower body — abs, hips, and glutes gently engaged."},
-    {name:"Hip Flexor Stretch",area:"Hip Flexors — Recovery",emoji:"🧘",gymsets:"2 × 60 sec each side",homesets:"2 × 60 sec each side",notes:"Low lunge on a mat, sink hips forward and down. Essential recovery stretch.",homenotes:"Same exercise at home. Use a mat or folded towel under back knee.",tip:"Squeeze the BACK glute while you sink forward — this deepens the hip flexor stretch dramatically",hometip:"Squeeze the BACK glute while you sink — deepens the stretch dramatically",howto:["Grab a mat and kneel on your RIGHT knee","Step your LEFT foot forward, left knee over left ankle","Sit up tall — torso upright","Gently tuck your tailbone — feel a stretch in the front of your right hip","Hold and breathe for 60 seconds, then switch sides"],howtoHome:["Kneel on RIGHT knee on mat","Step LEFT foot forward, knee over ankle","Sit tall, gently tuck tailbone","Hold 60 seconds — breathe steadily — switch sides"],mod:"Struggling to kneel on hard floor? Double up the mat under your knee.",modHome:"Struggling to kneel? Stand in a lunge instead.",feel:"Stretch in the front of the hip of your back leg.",feelHome:"Stretch in the front of the hip of your back leg."}
-  ]},
-  { label:"WED", title:"💪 Core Stamina", sub:"Cables & weight · Deep core with resistance", homesub:"Bodyweight only · Zero equipment", exercises:[
-    {name:"Cable Crunch",area:"Abs — Full Core",emoji:"🔗",gymsets:"3 × 15 reps",homesets:"3 × 10 each side",notes:"Kneel facing cable machine, rope attachment overhead, crunch down contracting abs.",homenotes:"Lower back stays pressed to floor the entire time. Slow is the point.",tip:"Pull DOWN with your abs — not your arms or neck. Think about bringing your rib cage to your hips.",hometip:"If your lower back lifts even slightly, make the movement smaller",howto:["Set cable to high position, attach rope handle","Kneel facing the machine, grab rope with both hands at the sides of your head","Elbows stay bent throughout — they do not move","Brace your core, then crunch DOWN — bring rib cage toward hips","Hold the bottom for 1 second, slowly return to upright"],howtoHome:["Lie on back, arms straight up, knees bent 90 degrees in air","Press lower back FIRMLY into floor","Slowly lower opposite arm and leg toward floor — only as far as back stays flat","Return slowly, repeat other side"],mod:"Feeling it in your neck? Hold the rope at your forehead.",modHome:"Struggling? Do just the arm movement with no leg movement first.",feel:"Your abs — the full front of your core.",feelHome:"Deep abs working to keep your back on the floor."},
-    {name:"Cable Woodchop",area:"Obliques & Rotational Core",emoji:"🪓",gymsets:"3 × 12 each side",homesets:"2 × 30 sec each side",notes:"Cable set to high position, pull diagonally down and across your body. Best oblique exercise in the gym.",homenotes:"Seated, lean back slightly, twist and hold. You will feel your obliques immediately.",tip:"The rotation comes from your core — not your arms.",hometip:"The lean-back is what activates the core — sit straight and you lose most of the benefit",howto:["Set cable to high position, single handle attachment","Stand sideways to the machine, feet shoulder-width","Grab handle with both hands — arms extended","Pull the handle diagonally DOWN and ACROSS your body — toward the opposite hip","Rotate through your torso — that rotation is the exercise","Control the return — do not let the cable yank you back","12 reps, then turn around and repeat on the other side"],howtoHome:["Sit on floor, knees bent, feet flat","Lean back slightly until abs engage","Clasp hands at chest height","Rotate torso to one side and hold 30 seconds, switch sides"],mod:"New to this? Use a light weight and practice the rotation slowly.",modHome:"Back discomfort? Reduce the lean.",feel:"Your obliques — the sides of your core.",feelHome:"Immediately in your obliques — the sides of your core."},
-    {name:"Cable Oblique Pull",area:"Obliques & Waist",emoji:"↔️",gymsets:"3 × 15 each side",homesets:"3 × 15 each side",notes:"Cable set to low position, stand sideways, pull straight up alongside your body.",homenotes:"Side plank, dip hip toward floor and drive back up. Builds waist definition.",tip:"Keep the movement alongside your body — not in front of it.",hometip:"Slow and controlled — momentum does not build the waist, control does",howto:["Set cable to low position, single handle","Stand sideways to the machine, feet shoulder-width","Grab handle with the hand closest to the machine","Let your body side-bend slightly toward the machine","Pull the handle straight UP alongside your body","Hold the top for 1 second, lower slowly","15 reps, then switch sides"],howtoHome:["Side plank — elbow under shoulder, body in straight line","Slowly lower bottom hip toward floor","Drive hip back UP squeezing obliques","15 dips then flip to other side"],mod:"Feeling it in your shoulder? Make sure you are pulling alongside your body, not in front.",modHome:"Struggling to hold side plank? Drop bottom knee to the floor.",feel:"Side of your waist — the oblique on the working side.",feelHome:"Side of your waist on the working side."},
-    {name:"Weighted Dead Bug",area:"Deep Core — Stability",emoji:"🐛",gymsets:"3 × 10 each side",homesets:"3 × 10 each side",notes:"Same as the bodyweight dead bug but hold a light dumbbell in each hand reaching overhead.",homenotes:"Lower back stays pressed to floor the entire time. No weight needed.",tip:"The lower back rule is the same — if it lifts off the floor even slightly, the weight is too heavy",hometip:"If your lower back lifts even slightly, make the movement smaller",howto:["Lie on your back, hold a light dumbbell in each hand reaching straight up","Bend both knees to 90 degrees with legs lifted like a tabletop","Press your lower back FIRMLY into the floor","Slowly lower your RIGHT arm back overhead while straightening your LEFT leg","Lower back must not lift — that is the absolute rule","Return slowly, repeat other side"],howtoHome:["Lie on back, arms straight up, knees bent 90 degrees in air","Press lower back firmly into floor","Slowly lower opposite arm and leg — only as far as back stays flat","Return slowly, repeat other side"],mod:"Lower back lifting? Put the dumbbells down and do bodyweight.",modHome:"Do just the arm movement with no legs first if needed.",feel:"Your deep abs working hard to stabilize your lower back.",feelHome:"Deep abs keeping your back on the floor."},
-    {name:"Hollow Body Hold",area:"Full Core — Endurance",emoji:"🌙",gymsets:"3 × 20-30 sec hold",homesets:"3 × 20-30 sec hold",notes:"Arms overhead, legs extended, lower back flat — breathe through it.",homenotes:"Same exercise at home. Lower back flat is the only rule.",tip:"Pull your belly button toward the floor — that cue locks in the hollow position",hometip:"Pull your belly button toward the floor — that cue locks in the hollow position",howto:["Lie on a gym mat, press lower back into the floor","Extend arms overhead, extend legs out straight","Lift arms, head, shoulders and legs slightly off the floor","Lower back stays COMPLETELY FLAT — this is the whole exercise","Hold and breathe — do not hold your breath"],howtoHome:["Lie on back, press lower back into floor","Extend arms overhead, extend legs out","Lift arms, head, shoulders and legs slightly","Hold and breathe — lower back stays flat"],mod:"Struggling? Bend both knees and keep feet flat. Build up to straight legs over time.",modHome:"Struggling? Bend knees and keep feet flat. Build up over time.",feel:"Your entire core — upper abs, lower abs, and sides — all working at once.",feelHome:"Entire core all working at once."},
-    {name:"Cable Reverse Crunch",area:"Lower Abs",emoji:"🔄",gymsets:"3 × 15 reps",homesets:"3 × 15 reps",notes:"Lie on the floor with feet attached to low cable, curl hips toward chest against resistance.",homenotes:"Lift hips off floor using lower abs only — not momentum. Slow and intentional every rep.",tip:"The cable resistance on the way back down is where the lower abs really work",hometip:"If you feel it in hip flexors more than abs, slow down even more",howto:["Attach ankle straps to low cable, lie on the floor facing the machine","Knees bent at 90 degrees, hold the machine legs or a dumbbell behind your head for anchor","Using your LOWER ABS, curl hips up off the floor toward your chest","Hold at the top for 1 second","Slowly resist as the cable pulls your legs back to start"],howtoHome:["Lie on back, legs raised, knees slightly bent","Press lower back into floor","Using lower abs, slowly curl hips up off the floor","Hold at top for 1 second, lower slowly — do not drop"],mod:"Cable setup feels awkward? Do the bodyweight version on the mat.",modHome:"Make the movement smaller if you feel it in hip flexors instead of abs.",feel:"Directly in your lower abs.",feelHome:"Directly in your lower abs — below the belly button."}
-  ]},
-  { label:"THU", title:"✨ Inner Thigh & Pelvic Floor", sub:"Machines · Precision & resistance", homesub:"Band above knees · Total control", exercises:[
-    {name:"Seated Inner Thigh Machine",area:"Inner Thighs — Squeeze Together",emoji:"🟣",gymsets:"3 × 20 reps",homesets:"3 × 20 reps",notes:"Seated adductor machine — squeeze legs TOGETHER against resistance.",homenotes:"Band around knees, seated, squeeze knees together against the band.",tip:"Control the opening — do not let the machine push your legs apart. The slow controlled open is half the exercise.",hometip:"The band should create real resistance — if it feels too easy, move to a heavier band",howto:["Sit in the inner thigh machine — pads on the INSIDE of your knees","Set the range so legs start comfortably open","Sit tall — back straight, not slouched","Slowly squeeze both legs TOGETHER against the resistance","Hold the squeeze for 1 second","Slowly open legs back to start — take 2 to 3 seconds, resist the opening"],howtoHome:["Sit in a sturdy chair, band just above both knees","Slowly squeeze knees TOGETHER against resistance","Hold 1 second, slowly release — control the return","20 slow controlled reps"],mod:"Machine feels uncomfortable? Reduce the range of motion.",modHome:"No band? Squeeze your knees against your own hands placed on the outside.",feel:"Burning in your inner thighs.",feelHome:"Inner thighs and outer hip simultaneously."},
-    {name:"Seated Outer Thigh Machine",area:"Outer Glutes & Hip Dips",emoji:"↔️",gymsets:"3 × 20 reps",homesets:"3 × 20 reps (10 each side)",notes:"Seated abductor machine — push legs APART against resistance. Targets the glute medius.",homenotes:"Stand tall, drop one hip down at a time — slow and controlled.",tip:"Control the return — do not let the machine slam your legs back in.",hometip:"This is a DROP not a sway — let one hip fall toward the floor",howto:["Sit in the outer thigh machine — pads on the OUTSIDE of your knees","Sit tall — back straight, not slouched","Slowly push both legs APART against the pads","Push as wide as the machine allows — hold for 1 second","Slowly return legs to starting position — take 2 to 3 seconds"],howtoHome:["Stand with feet shoulder-width apart, soft bend in knees, hands on hips","Slowly drop your RIGHT hip down toward the floor","Hold the drop for 1 second, return to center","Alternate sides slowly"],mod:"Lean slightly forward while pushing apart — shifts more work to the glute medius.",modHome:"Struggling with balance? Stand next to a wall.",feel:"Outer glutes — the side of your butt. This is the glute medius that fills hip dips.",feelHome:"Outer hips and the sides of your waist."},
-    {name:"Kegels — Quick Pulses",area:"Pelvic Floor — Activation",emoji:"✨",gymsets:"3 × 20 pulses",homesets:"3 × 20 pulses",notes:"Contract and release pelvic floor quickly. Do these seated on a bench between other exercises.",homenotes:"Do it anywhere, anytime — couch, floor, chair. Zero equipment.",tip:"Think of it as blinking your pelvic floor — quick, rhythmic, deliberate",hometip:"Think of it as blinking your pelvic floor — quick, rhythmic, deliberate",howto:["Sit comfortably on a bench","Locate your pelvic floor — the muscles used to stop urination","Contract those muscles quickly and firmly","Release FULLY between each pulse","20 quick pulses per set — breathe normally"],howtoHome:["Seated, standing, or lying — whatever is comfortable","Contract pelvic floor quickly and firmly","Release FULLY between each pulse","20 pulses per set — breathe normally"],mod:"Struggling to locate the muscles? Lie on a mat.",modHome:"Struggling to locate muscles? Lie on your back.",feel:"A subtle internal lift at the base of your pelvis.",feelHome:"A subtle internal lift at the base of your pelvis."},
-    {name:"Kegels — Long Hold",area:"Pelvic Floor — Strength",emoji:"🔒",gymsets:"3 × 10 sec hold × 10",homesets:"3 × 10 sec hold × 10",notes:"Squeeze and hold 10 full seconds, fully release. Do these on a bench between sets.",homenotes:"Seated or lying. Squeeze, hold 10 seconds, fully release.",tip:"A full release after each hold prevents pelvic floor tension — never skip the release",hometip:"A complete release after each hold prevents tension — never skip it",howto:["Sit on a bench between exercises","Contract pelvic floor muscles firmly","Hold for a full 10 seconds — count it slowly","FULLY release — let everything go completely","Rest 5 seconds, repeat 10 times per set"],howtoHome:["Get comfortable — seated or lying","Contract pelvic floor firmly","Hold for 10 seconds — count it out","FULLY release, rest 5 seconds, repeat 10 times"],mod:"Struggling to hold 10 seconds? Start with 5 second holds.",modHome:"Struggling to hold 10 seconds? Start with 5 second holds.",feel:"Firm internal engagement during hold, complete letting-go during release.",feelHome:"Firm engagement during hold, complete release after."},
-    {name:"Sumo Squat Hold & Squeeze",area:"Inner Thighs & Pelvic Floor",emoji:"🦵",gymsets:"3 × 10 sec hold × 10",homesets:"3 × 10 sec hold × 10",notes:"Hold a dumbbell at chest for added resistance, sumo squat position, squeeze inner thighs isometrically.",homenotes:"Same exercise at home without the dumbbell.",tip:"It is an isometric squeeze — like trying to close your legs while they stay wide open.",hometip:"It is an isometric squeeze — like trying to close your legs while they stay wide open",howto:["Hold one dumbbell vertically at your chest","Feet wide, toes out, lower into sumo squat position","Hold the squat — do not stand back up","Squeeze inner thighs toward each other isometrically — feet stay planted","Squeeze as hard as you can for 10 seconds","Fully release the squeeze — legs stay in position","10 holds per set"],howtoHome:["Feet wide, toes out, lower into sumo squat","Hold the squat position","Squeeze inner thighs toward each other isometrically","Hold 10 seconds, fully release","10 holds per set"],mod:"Dumbbell feels like too much? Do without weight.",modHome:"Struggling to hold the squat? Use a chair — hover just above the seat.",feel:"Deep burn in your inner thighs and your whole lower body working to stay stable.",feelHome:"Deep burn in inner thighs. Whole lower body working to stay stable."},
-    {name:"Bridge with Pelvic Floor Hold",area:"Glutes & Pelvic Floor",emoji:"🏋️",gymsets:"3 × 10 reps",homesets:"3 × 10 reps",notes:"On a mat with a weight plate on hips. Squeeze glutes AND pelvic floor at the top simultaneously.",homenotes:"Same exercise at home — bodyweight only. Squeeze glutes AND pelvic floor at the top.",tip:"This double contraction — glutes AND pelvic floor together — is the most powerful combo in this workout",hometip:"The double contraction — glutes AND pelvic floor together — is the most powerful combo here",howto:["Lie on a mat, feet flat, knees bent","Place a light weight plate on your hips — hold it with both hands","Drive hips up into glute bridge","At the TOP — squeeze glutes hard AND contract pelvic floor simultaneously","Hold both for 3 full seconds — breathe normally","Lower hips slowly — fully release everything at the bottom"],howtoHome:["Lie on back, feet flat, knees bent","Drive hips up into glute bridge","At top — squeeze glutes hard AND contract pelvic floor","Hold both for 3 full seconds, lower slowly"],mod:"Weight plate feels awkward? Do without weight.",modHome:"Struggling to lift fully? A partial bridge still works both muscles.",feel:"Glutes working hard at the top and a subtle internal engagement in your pelvic floor.",feelHome:"Glutes working hard and subtle internal pelvic floor engagement at the top."}
-  ]}
-];
-
-// ── CALENDAR PICKER ───────────────────────────────────────────
-function CalendarPicker(props) {
-  var activeDate=props.activeDate, onSelect=props.onSelect;
+// ─── CALENDAR PICKER ─────────────────────────────────────────────────────────
+function CalendarPicker(props){
+  var activeDate=props.activeDate,onSelect=props.onSelect;
   var todayISO=todayStr();
-  var initY=parseInt(activeDate.slice(0,4)), initM=parseInt(activeDate.slice(5,7))-1;
-  var cy=useState(initY),calYear=cy[0],setCalYear=cy[1];
-  var cm=useState(initM),calMonth=cm[0],setCalMonth=cm[1];
+  var initY=parseInt(activeDate.slice(0,4)),initM=parseInt(activeDate.slice(5,7))-1;
+  var s1=useState(initY),calYear=s1[0],setCalYear=s1[1];
+  var s2=useState(initM),calMonth=s2[0],setCalMonth=s2[1];
   function prevMonth(){if(calMonth===0){setCalMonth(11);setCalYear(calYear-1);}else setCalMonth(calMonth-1);}
   function nextMonth(){var nm=calMonth+1,ny=calYear;if(nm>11){nm=0;ny++;}var fp=ny+'-'+String(nm+1).padStart(2,'0')+'-01';if(fp>todayISO)return;setCalMonth(nm);setCalYear(ny);}
   var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var firstDay=new Date(calYear,calMonth,1).getDay();
-  var daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  var dim=new Date(calYear,calMonth+1,0).getDate();
   var cells=[];
-  for(var i=0;i<firstDay;i++) cells.push(null);
-  for(var d=1;d<=daysInMonth;d++) cells.push(d);
+  for(var i=0;i<firstDay;i++)cells.push(null);
+  for(var d=1;d<=dim;d++)cells.push(d);
   return React.createElement('div',{className:'cal-picker'},
     React.createElement('div',{className:'cal-picker-header'},
       React.createElement('button',{className:'cal-nav',onClick:prevMonth},'◀'),
@@ -127,9 +461,9 @@ function CalendarPicker(props) {
     React.createElement('div',{className:'cal-dow'},['Su','Mo','Tu','We','Th','Fr','Sa'].map(function(d){return React.createElement('span',{key:d},d);})),
     React.createElement('div',{className:'cal-grid'},
       cells.map(function(d,i){
-        if(!d) return React.createElement('div',{key:'e'+i,className:'cal-cell empty'});
+        if(!d)return React.createElement('div',{key:'e'+i,className:'cal-cell empty'});
         var iso=calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-        var isFuture=iso>todayISO, isToday=iso===todayISO, isSel=iso===activeDate;
+        var isFuture=iso>todayISO,isToday=iso===todayISO,isSel=iso===activeDate;
         var cls='cal-cell'+(isToday?' today':'')+(isSel?' selected':'')+(isFuture?' future':'');
         return React.createElement('div',{key:iso,className:cls,onClick:function(){if(!isFuture)onSelect(iso);}},d);
       })
@@ -137,33 +471,29 @@ function CalendarPicker(props) {
   );
 }
 
-// ── PER-SET LOG FORM ──────────────────────────────────────────
-function LogForm(props) {
+// ─── LOG FORM ────────────────────────────────────────────────────────────────
+function LogForm(props){
   var numSets=parseSets(props.isHome?props.homesets:props.gymsets);
   function makeRow(){return{reps:'',weight:''};}
-  var initRows=[];
-  for(var i=0;i<numSets;i++) initRows.push(makeRow());
-  var rw=useState(initRows),rows=rw[0],setRows=rw[1];
-  var sv=useState(false),saving=sv[0],setSaving=sv[1];
-
-  function updateRow(idx,field,val){setRows(function(prev){var next=prev.map(function(r){return Object.assign({},r);});next[idx][field]=val;return next;});}
-  function addRow(){setRows(function(prev){return prev.concat(makeRow());});}
-  function removeRow(idx){setRows(function(prev){if(prev.length<=1)return prev;return prev.filter(function(_,i){return i!==idx;});});}
-
+  var initRows=[];for(var i=0;i<numSets;i++)initRows.push(makeRow());
+  var s1=useState(initRows),rows=s1[0],setRows=s1[1];
+  var s2=useState(false),saving=s2[0],setSaving=s2[1];
+  function updateRow(idx,field,val){setRows(function(p){var n=p.map(function(r){return Object.assign({},r);});n[idx][field]=val;return n;});}
+  function addRow(){setRows(function(p){return p.concat(makeRow());});}
+  function removeRow(idx){setRows(function(p){if(p.length<=1)return p;return p.filter(function(_,i){return i!==idx;});});}
   function submit(){
     var filled=rows.filter(function(r){return r.reps||r.weight;});
-    if(!filled.length) return;
+    if(!filled.length)return;
     setSaving(true);
     var logDate=props.logDate||todayStr();
     var key='gdt_'+logDate+'_'+props.exName.replace(/\s+/g,'-');
     var existing=JSON.parse(safeGet(key)||'[]');
-    var timestamp=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    filled.forEach(function(r,i){existing.push({set:i+1,reps:r.reps,weight:r.weight,time:timestamp});});
+    var ts=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    filled.forEach(function(r,i){existing.push({set:i+1,reps:r.reps,weight:r.weight,time:ts});});
     safeSet(key,JSON.stringify(existing));
     var reset=[];for(var i=0;i<numSets;i++)reset.push(makeRow());
     setRows(reset);setSaving(false);props.onSaved();
   }
-
   return React.createElement('div',{style:{background:'#0a0010',border:'1px solid #3b0764',borderRadius:10,padding:12,marginTop:8}},
     React.createElement('div',{style:{fontSize:11,color:'#c084fc',fontWeight:700,marginBottom:10}},'📝 Log This Exercise'),
     React.createElement('div',{style:{display:'grid',gridTemplateColumns:'28px 1fr 1fr 24px',gap:5,marginBottom:4}},
@@ -177,7 +507,7 @@ function LogForm(props) {
       return React.createElement('div',{key:i,className:'set-row'},
         React.createElement('div',{className:'set-label'},'S'+(i+1)),
         React.createElement('input',{type:'number',placeholder:'15',value:row.reps,onChange:function(e){updateRow(ci,'reps',e.target.value);}}),
-        React.createElement('input',{type:'text',placeholder:'20 lb',value:row.weight,onChange:function(e){updateRow(ci,'weight',e.target.value);}}),
+        React.createElement('input',{type:'text',placeholder:'bw / band',value:row.weight,onChange:function(e){updateRow(ci,'weight',e.target.value);}}),
         React.createElement('button',{className:'remove-set-btn',onClick:function(){removeRow(ci);}},'×')
       );
     }),
@@ -186,12 +516,11 @@ function LogForm(props) {
   );
 }
 
-// ── HISTORY VIEW ──────────────────────────────────────────────
-function HistoryView() {
-  var d=useState(null),setData=d[1];d=d[0];
-  var rf=useState(0),setRf=rf[1];rf=rf[0];
-  var op=useState({}),openDates=op[0],setOpenDates=op[1];
-
+// ─── HISTORY VIEW ─────────────────────────────────────────────────────────────
+function HistoryView(){
+  var s1=useState(null),data=s1[0],setData=s1[1];
+  var s2=useState(0),rf=s2[0],setRf=s2[1];
+  var s3=useState({}),openDates=s3[0],setOpenDates=s3[1];
   useEffect(function(){
     var keys=safeKeys('gdt_');
     var byDate={};
@@ -204,45 +533,36 @@ function HistoryView() {
     });
     setData(byDate);
   },[rf]);
-
-  function toggleDate(date){setOpenDates(function(prev){var n=Object.assign({},prev);n[date]=!prev[date];return n;});}
-
+  function toggleDate(date){setOpenDates(function(p){var n=Object.assign({},p);n[date]=!p[date];return n;});}
   function delEntry(key,idx){
-    var entries=JSON.parse(safeGet(key)||'[]');
-    entries.splice(idx,1);
-    if(entries.length){safeSet(key,JSON.stringify(entries));}else{safeRemove(key);}
+    var entries=JSON.parse(safeGet(key)||'[]');entries.splice(idx,1);
+    if(entries.length)safeSet(key,JSON.stringify(entries));else safeRemove(key);
     setRf(function(x){return x+1;});
   }
-
-  if(!d) return React.createElement('div',{style:{textAlign:'center',color:'#9ca3af',fontSize:13,padding:'20px 0'}},'Loading...');
-  if(!Object.keys(d).length) return React.createElement('div',{style:{textAlign:'center',color:'#6b7280',fontSize:13,padding:'30px 0'}},'No logs yet. Tap 📝 Log on any exercise to start tracking!');
-
-  var dates=Object.keys(d).sort(function(a,b){return b.localeCompare(a);});
+  if(!data)return React.createElement('div',{style:{textAlign:'center',color:'#9ca3af',fontSize:13,padding:'20px 0'}},'Loading...');
+  if(!Object.keys(data).length)return React.createElement('div',{style:{textAlign:'center',color:'#6b7280',fontSize:13,padding:'30px 0'}},'No logs yet. Tap 📝 Log on any exercise to start tracking!');
+  var dates=Object.keys(data).sort(function(a,b){return b.localeCompare(a);});
   return React.createElement('div',null,
     dates.map(function(date){
-      var exs=d[date];
-      var friendly=friendlyDate(date);
-      var isOpen=!!openDates[date];
-      var totalSets=Object.values(exs).reduce(function(sum,entries){return sum+entries.length;},0);
+      var exs=data[date];var isOpen=!!openDates[date];
+      var totalSets=Object.values(exs).reduce(function(sum,e){return sum+e.length;},0);
       return React.createElement('div',{key:date,style:{background:'#1a0030',border:'1px solid #3b0764',borderRadius:12,marginBottom:10,overflow:'hidden'}},
         React.createElement('div',{className:'hist-day-header',onClick:function(){toggleDate(date);}},
           React.createElement('div',null,
-            React.createElement('div',{className:'hist-day-title'},'📅 '+friendly),
-            React.createElement('div',{style:{fontSize:10,color:'#6b7280',marginTop:2}},Object.keys(exs).length+' exercise'+(Object.keys(exs).length!==1?'s':'')+' · '+totalSets+' set'+(totalSets!==1?'s':''))
+            React.createElement('div',{className:'hist-day-title'},'📅 '+friendlyDate(date)),
+            React.createElement('div',{style:{fontSize:10,color:'#6b7280',marginTop:2}},Object.keys(exs).length+' exercises · '+totalSets+' sets')
           ),
           React.createElement('div',{className:'hist-day-toggle'},isOpen?'▲ Hide':'▼ Show')
         ),
         isOpen&&React.createElement('div',{style:{padding:'10px 14px'}},
           Object.keys(exs).map(function(ex){
-            var entries=exs[ex];
-            var logKey='gdt_'+date+'_'+ex.replace(/\s+/g,'-');
+            var entries=exs[ex];var logKey='gdt_'+date+'_'+ex.replace(/\s+/g,'-');
             return React.createElement('div',{key:ex,className:'hist-block'},
               React.createElement('div',{className:'hist-date'},ex),
               entries.map(function(entry,idx){
                 var ci=idx,ck=logKey;
                 var label=entry.set?'Set '+entry.set:'';
                 var detail=(entry.reps?entry.reps+' reps':'')+(entry.weight?' @ '+entry.weight:'');
-                if(!entry.set&&(entry.sets||entry.note)){label=entry.sets?entry.sets+' sets':'';detail=(entry.reps?'× '+entry.reps+' reps':'')+(entry.weight?' @ '+entry.weight:'')+(entry.note?' — '+entry.note:'');}
                 return React.createElement('div',{key:idx,className:'hist-row'},
                   React.createElement('span',{style:{color:'#a78bfa',fontWeight:700,marginRight:6}},label),
                   React.createElement('span',null,detail),
@@ -260,8 +580,8 @@ function HistoryView() {
   );
 }
 
-// ── CARD ──────────────────────────────────────────────────────
-function Card(props) {
+// ─── EXERCISE CARD ────────────────────────────────────────────────────────────
+function Card(props){
   var ex=props.ex,isDone=props.isDone,isOpen=props.isOpen,isHome=props.isHome,showLog=props.showLog,logDate=props.logDate;
   var sets=isHome?ex.homesets:ex.gymsets;
   var notes=isHome?ex.homenotes:ex.notes;
@@ -269,7 +589,6 @@ function Card(props) {
   var howto=isHome?ex.howtoHome:ex.howto;
   var mod=isHome?ex.modHome:ex.mod;
   var feel=isHome?ex.feelHome:ex.feel;
-
   return React.createElement('div',{style:{background:isDone?'#0f1f0f':'#1a0030',border:'2px solid '+(isDone?'#166534':'#3b0764'),borderRadius:12,padding:'14px 16px',marginBottom:12}},
     React.createElement('div',{onClick:props.onCheck,style:{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:6,cursor:'pointer'}},
       React.createElement('div',{style:{display:'flex',alignItems:'center',gap:8}},
@@ -279,7 +598,7 @@ function Card(props) {
           React.createElement('div',{style:{fontSize:11,color:isHome?'#4ade80':'#7c3aed',fontWeight:600,marginTop:2}},ex.area)
         )
       ),
-      React.createElement('div',{style:{fontSize:11,color:'#6b7280',textAlign:'right'}},sets)
+      React.createElement('div',{style:{fontSize:11,color:'#6b7280',textAlign:'right',maxWidth:110}},sets)
     ),
     React.createElement('div',{style:{fontSize:12,color:'#9ca3af',lineHeight:1.5,marginBottom:8}},notes),
     React.createElement('div',{style:{background:'#0a0010',borderRadius:8,padding:'6px 10px',fontSize:11,color:'#c084fc',fontStyle:'italic',marginBottom:10}},'💡 '+tip),
@@ -287,7 +606,7 @@ function Card(props) {
       React.createElement('button',{onClick:props.onExpand,style:{flex:1,background:isOpen?'#3b0764':'#0a0010',border:'1px solid #3b0764',borderRadius:8,padding:'6px 14px',fontSize:12,color:'#a78bfa',fontWeight:700,cursor:'pointer'}},isOpen?'▲ Hide How To':'▼ How To'),
       React.createElement('button',{onClick:props.onToggleLog,style:{flex:1,background:showLog?'#7c3aed':'#0a0010',border:'1px solid #7c3aed',borderRadius:8,padding:'6px 14px',fontSize:12,color:showLog?'white':'#c084fc',fontWeight:700,cursor:'pointer'}},showLog?'▲ Hide Log':'📝 Log')
     ),
-    isOpen&&React.createElement('div',{style:{marginTop:0,background:'#0a0010',borderRadius:8,padding:'12px 14px',marginBottom:8}},
+    isOpen&&React.createElement('div',{style:{background:'#0a0010',borderRadius:8,padding:'12px 14px',marginBottom:8}},
       howto.map(function(step,s){return React.createElement('div',{key:s,style:{display:'flex',gap:10,marginBottom:8}},React.createElement('span',{style:{color:'#7c3aed',fontWeight:800,fontSize:13,minWidth:20}},(s+1)+'.'),React.createElement('span',{style:{color:'#e2e8f0',fontSize:12,lineHeight:1.5}},step));}),
       React.createElement('div',{style:{marginTop:12,background:'#1a0030',borderRadius:8,padding:'10px 12px',borderLeft:'3px solid #7c3aed'}},
         React.createElement('div',{style:{fontSize:11,color:'#c084fc',fontWeight:700,marginBottom:4}},'😅 Struggling? Try this instead:'),
@@ -298,39 +617,39 @@ function Card(props) {
         React.createElement('div',{style:{fontSize:11,color:'#86efac',lineHeight:1.5}},feel)
       )
     ),
-    showLog&&React.createElement(LogForm,{
-      exName:ex.name,logDate:logDate,
-      gymsets:ex.gymsets,homesets:ex.homesets,isHome:isHome,
-      onSaved:function(){props.onLogSaved&&props.onLogSaved();}
-    })
+    showLog&&React.createElement(LogForm,{exName:ex.name,logDate:logDate,gymsets:ex.gymsets,homesets:ex.homesets,isHome:isHome,onSaved:function(){props.onLogSaved&&props.onLogSaved();}})
   );
 }
 
-// ── APP ───────────────────────────────────────────────────────
-function App() {
-  var t=useState(getInitialTab),tab=t[0],setTab=t[1];
-  var m=useState('gym'),mode=m[0],setMode=m[1];
-  var c=useState({}),checked=c[0],setChecked=c[1];
-  var e=useState({}),expanded=e[0],setExpanded=e[1];
-  var lg=useState({}),logOpen=lg[0],setLogOpen=lg[1];
-  var mt=useState('workout'),mainTab=mt[0],setMainTab=mt[1];
-  var hr=useState(0),histRefresh=hr[0],setHistRefresh=hr[1];
-  var ld=useState(todayStr()),logDate=ld[0],setLogDate=ld[1];
-  var sc=useState(false),showCal=sc[0],setShowCal=sc[1];
+// ─── APP ─────────────────────────────────────────────────────────────────────
+function App(){
+  var s1=useState(getInitialTab),tab=s1[0],setTab=s1[1];
+  var s2=useState('gym'),mode=s2[0],setMode=s2[1];
+  var s3=useState({}),checked=s3[0],setChecked=s3[1];
+  var s4=useState({}),expanded=s4[0],setExpanded=s4[1];
+  var s5=useState({}),logOpen=s5[0],setLogOpen=s5[1];
+  var s6=useState('workout'),mainTab=s6[0],setMainTab=s6[1];
+  var s7=useState(0),histRefresh=s7[0],setHistRefresh=s7[1];
+  var s8=useState(todayStr()),logDate=s8[0],setLogDate=s8[1];
+  var s9=useState(false),showCal=s9[0],setShowCal=s9[1];
+  var savedWeek=parseInt(safeGet('gdt_week')||'1')||1;
+  var s10=useState(savedWeek),week=s10[0],setWeekRaw=s10[1];
+  function setWeek(w){setWeekRaw(w);safeSet('gdt_week',String(w));}
 
   var isHome=mode==='home';
   var isLog=mainTab==='log';
-  var day=DAYS[tab];
-  var exs=day.exercises;
+  var dayKey=DAY_KEYS[tab];
+  var exs=getExForWeekDay(week,dayKey);
   var isToday=logDate===todayStr();
-  var done=exs.filter(function(_,i){return!!checked[mode+'-'+tab+'-'+i];}).length;
+  var done=exs.filter(function(_,i){return!!checked[mode+'-'+week+'-'+tab+'-'+i];}).length;
   var pct=(done/exs.length)*100;
-
-  function ck(key){setChecked(function(prev){var n=Object.assign({},prev);n[key]=!prev[key];return n;});}
-  function ek(key){setExpanded(function(prev){var n=Object.assign({},prev);n[key]=!prev[key];return n;});}
-  function lk(key){setLogOpen(function(prev){var n=Object.assign({},prev);n[key]=!prev[key];return n;});}
-
+  var phaseColor=getPhaseColor(week);
+  var phaseLabel=getPhaseLabel(week);
   var headerBg=isHome?'linear-gradient(135deg,#064e3b,#059669)':'linear-gradient(135deg,#4a0080,#c44dff)';
+
+  function ck(key){setChecked(function(p){var n=Object.assign({},p);n[key]=!p[key];return n;});}
+  function ek(key){setExpanded(function(p){var n=Object.assign({},p);n[key]=!p[key];return n;});}
+  function lk(key){setLogOpen(function(p){var n=Object.assign({},p);n[key]=!p[key];return n;});}
 
   return React.createElement('div',{style:{fontFamily:'system-ui,sans-serif',maxWidth:460,margin:'0 auto',padding:16,backgroundColor:'#0a0010',minHeight:'100vh'}},
 
@@ -338,7 +657,10 @@ function App() {
 
     React.createElement('div',{style:{background:headerBg,borderRadius:14,padding:'18px 20px',color:'white',marginBottom:16}},
       React.createElement('div',{style:{fontSize:22,fontWeight:800}},'👑 Goddess Training'),
-      React.createElement('div',{style:{fontSize:13,opacity:0.9,marginTop:2}},isHome?'🏠 At Home · Bands & Bodyweight':'🏋️ Gym · Cables · Machines · Dumbbells'),
+      React.createElement('div',{style:{fontSize:12,opacity:0.85,marginTop:2,lineHeight:1.5}},'Hip flow · Twerk control · Core · Pelvic floor'+(isHome?' · 🏠 Home':' · 🏋️ Gym')),
+      React.createElement('div',{style:{display:'flex',alignItems:'center',gap:8,marginTop:8}},
+        React.createElement('span',{style:{background:phaseColor,color:'white',borderRadius:20,padding:'3px 12px',fontSize:11,fontWeight:800}},'Week '+week+' · '+phaseLabel)
+      ),
       !isLog&&React.createElement('div',null,
         React.createElement('div',{style:{marginTop:10,background:'rgba(255,255,255,0.25)',borderRadius:8,height:8}},
           React.createElement('div',{style:{background:'white',borderRadius:8,height:8,width:pct+'%',transition:'width 0.3s'}})
@@ -346,40 +668,64 @@ function App() {
         React.createElement('div',{style:{fontSize:12,opacity:0.85,marginTop:4}},done+' of '+exs.length+' complete'+(done===exs.length?' 👑 DONE!':''))
       )
     ),
+
     React.createElement('div',{style:{display:'flex',background:'#1a0030',borderRadius:10,padding:4,marginBottom:12,gap:4}},
       React.createElement('button',{onClick:function(){setMainTab('workout');},style:{flex:1,padding:'9px 4px',borderRadius:8,border:'none',cursor:'pointer',fontSize:12,fontWeight:700,background:!isLog?'#7c3aed':'transparent',color:!isLog?'white':'#9ca3af'}},'🏋️ Workout'),
       React.createElement('button',{onClick:function(){setMainTab('log');setHistRefresh(function(x){return x+1;});},style:{flex:1,padding:'9px 4px',borderRadius:8,border:'none',cursor:'pointer',fontSize:12,fontWeight:700,background:isLog?'#7c3aed':'transparent',color:isLog?'white':'#9ca3af'}},'📅 Log History')
     ),
+
+    !isLog&&React.createElement('div',{style:{marginBottom:14}},
+      React.createElement('div',{style:{fontSize:11,color:'#6b7280',fontWeight:700,marginBottom:8,letterSpacing:1}},'SELECT WEEK'),
+      React.createElement('div',{className:'week-grid'},
+        [1,2,3,4,5,6,7,8,9,10,11,12].map(function(w){
+          var pc=getPhaseColor(w);var isCur=w===week;
+          return React.createElement('button',{key:w,className:'week-btn',onClick:function(){setWeek(w);},
+            style:{background:isCur?pc:'#0a0010',color:isCur?'white':pc,borderColor:pc}},
+            React.createElement('div',null,'Wk '+w),
+            React.createElement('div',{style:{fontSize:9,opacity:0.8}},getPhaseLabel(w).slice(0,3).toUpperCase())
+          );
+        })
+      )
+    ),
+
+    isLog&&React.createElement(HistoryView,{key:histRefresh}),
+
     !isLog&&React.createElement('div',null,
       React.createElement('div',{className:'active-date-bar'},
-        React.createElement('span',null,'📅 Logging for: ',React.createElement('strong',null,isToday?'Today ('+friendlyDate(logDate)+')':friendlyDate(logDate))),
+        React.createElement('span',null,'📅 ',React.createElement('strong',null,isToday?'Today ('+friendlyDate(logDate)+')':friendlyDate(logDate))),
         React.createElement('div',{style:{display:'flex',gap:6}},
           !isToday&&React.createElement('button',{className:'today-btn',onClick:function(){setLogDate(todayStr());setShowCal(false);}},'Today'),
           React.createElement('button',{className:'today-btn',onClick:function(){setShowCal(function(v){return !v;});},style:{borderColor:'#c084fc',color:'#c084fc'}},showCal?'✕ Close':'📆 Change')
         )
       ),
-      showCal&&React.createElement(CalendarPicker,{activeDate:logDate,onSelect:function(iso){setLogDate(iso);setShowCal(false);}})
-    ),
-    isLog&&React.createElement(HistoryView,{key:histRefresh}),
-    !isLog&&React.createElement('div',null,
+      showCal&&React.createElement(CalendarPicker,{activeDate:logDate,onSelect:function(iso){setLogDate(iso);setShowCal(false);}}),
+
       React.createElement('div',{style:{display:'flex',background:'#1a0030',borderRadius:10,padding:4,marginBottom:12,gap:4}},
         React.createElement('button',{onClick:function(){setMode('gym');setChecked({});},style:{flex:1,padding:'8px 4px',borderRadius:8,border:'none',cursor:'pointer',fontSize:11,fontWeight:700,background:!isHome?'#7c3aed':'transparent',color:!isHome?'white':'#9ca3af'}},'🏋️ Gym'),
         React.createElement('button',{onClick:function(){setMode('home');setChecked({});},style:{flex:1,padding:'8px 4px',borderRadius:8,border:'none',cursor:'pointer',fontSize:11,fontWeight:700,background:isHome?'#059669':'transparent',color:isHome?'white':'#9ca3af'}},'🏠 At Home')
       ),
+
       React.createElement('div',{style:{display:'flex',background:'#1a0030',borderRadius:10,padding:4,marginBottom:12,gap:4}},
-        DAYS.map(function(d,i){return React.createElement('button',{key:i,onClick:function(){setTab(i);},style:{flex:1,padding:'8px 2px',borderRadius:8,border:'none',cursor:'pointer',fontSize:10,fontWeight:700,background:tab===i?'#7c3aed':'transparent',color:tab===i?'white':'#9ca3af'}},d.label);})
+        DAY_LABELS.map(function(d,i){return React.createElement('button',{key:i,onClick:function(){setTab(i);},style:{flex:1,padding:'8px 2px',borderRadius:8,border:'none',cursor:'pointer',fontSize:10,fontWeight:700,background:tab===i?phaseColor:'transparent',color:tab===i?'white':'#9ca3af'}},d);})
       ),
-      React.createElement('div',{style:{background:'#1a0030',borderRadius:8,padding:'10px 14px',fontSize:12,color:isHome?'#4ade80':'#a78bfa',marginBottom:14,fontWeight:600}},day.title+' · '+(isHome?day.homesub:day.sub)),
+
+      React.createElement('div',{style:{background:'#1a0030',borderRadius:8,padding:'10px 14px',fontSize:12,color:isHome?'#4ade80':'#a78bfa',marginBottom:14,fontWeight:600}},
+        DAY_TITLES[tab]+' · '+(isHome?DAY_SUBS_HOME[tab]:DAY_SUBS_GYM[tab])
+      ),
+
       exs.map(function(ex,i){
-        var ckey=mode+'-'+tab+'-'+i,ekey=mode+'-'+tab+'-e-'+i,lkey=mode+'-'+tab+'-l-'+i;
-        return React.createElement(Card,{key:i,ex:ex,isDone:!!checked[ckey],isOpen:!!expanded[ekey],showLog:!!logOpen[lkey],isHome:isHome,logDate:logDate,
+        var ckey=mode+'-'+week+'-'+tab+'-'+i;
+        var ekey=mode+'-'+week+'-'+tab+'-e-'+i;
+        var lkey=mode+'-'+week+'-'+tab+'-l-'+i;
+        return React.createElement(Card,{key:ex.name+i,ex:ex,isDone:!!checked[ckey],isOpen:!!expanded[ekey],showLog:!!logOpen[lkey],isHome:isHome,logDate:logDate,
           onCheck:function(){ck(ckey);},
           onExpand:function(ev){if(ev&&ev.stopPropagation)ev.stopPropagation();ek(ekey);},
           onToggleLog:function(){lk(lkey);},
           onLogSaved:function(){setHistRefresh(function(x){return x+1;});}
         });
       }),
-      React.createElement('div',{style:{marginTop:16,background:'#1a0030',borderRadius:10,padding:'14px 16px',fontSize:12,color:'#c084fc',fontWeight:600,textAlign:'center',border:'1px solid #3b0764'}},'👑 Consistency builds goddesses. Show up Mon through Thu every week.')
+
+      React.createElement('div',{style:{marginTop:16,background:'#1a0030',borderRadius:10,padding:'14px 16px',fontSize:12,color:'#c084fc',fontWeight:600,textAlign:'center',border:'1px solid #3b0764'}},'👑 The booty app builds the muscle. The goddess app builds the control.')
     )
   );
 }
