@@ -18,7 +18,8 @@
     .hist-date{color:#c084fc;font-weight:700;font-size:11px;margin-bottom:4px;}
     .hist-block{background:#0a0010;border-radius:8px;padding:8px 10px;margin-bottom:8px;}
     .del{background:none;border:none;color:#ef4444;cursor:pointer;font-size:13px;padding:0 2px;}
-    /* Calendar picker */
+    .back-btn{display:inline-flex;align-items:center;gap:6px;background:#1a0030;border:1px solid #3b0764;border-radius:8px;color:#c084fc;font-size:12px;font-weight:700;padding:7px 14px;cursor:pointer;text-decoration:none;margin-bottom:12px;}
+    .back-btn:active{opacity:0.8;}
     .cal-picker{background:#1a0030;border:1px solid #3b0764;border-radius:12px;padding:12px;margin-bottom:12px;}
     .cal-picker-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
     .cal-picker-title{color:#c084fc;font-size:13px;font-weight:800;}
@@ -34,12 +35,15 @@
     .cal-cell.empty{background:transparent;pointer-events:none;}
     .active-date-bar{background:#3b0764;border-radius:8px;padding:7px 12px;margin-bottom:12px;font-size:12px;color:#c084fc;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
     .today-btn{background:none;border:1px solid #7c3aed;border-radius:6px;color:#a78bfa;font-size:11px;padding:3px 8px;cursor:pointer;}
-    /* Per-set log */
     .set-row{display:grid;grid-template-columns:28px 1fr 1fr 24px;gap:5px;align-items:center;margin-bottom:6px;}
     .set-label{font-size:11px;font-weight:800;color:#7c3aed;text-align:center;}
     .add-set-btn{background:#0a0010;border:1px dashed #7c3aed;border-radius:8px;color:#a78bfa;font-size:12px;font-weight:700;padding:7px;cursor:pointer;width:100%;margin-top:4px;}
     .remove-set-btn{background:none;border:none;color:#6b7280;cursor:pointer;font-size:15px;line-height:1;padding:0;}
     .remove-set-btn:hover{color:#ef4444;}
+    .hist-day-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#2a0050;cursor:pointer;user-select:none;}
+    .hist-day-header:active{opacity:0.8;}
+    .hist-day-title{font-size:13px;font-weight:800;color:#c084fc;}
+    .hist-day-toggle{font-size:11px;color:#a78bfa;font-weight:700;}
   </style>
 </head>
 <body>
@@ -62,12 +66,7 @@ function safeKeys(prefix){
 }
 
 function getInitialTab(){var d=new Date().getDay();if(d===1)return 0;if(d===2)return 1;if(d===3)return 2;if(d===4)return 3;return 0;}
-
-function parseSets(setsStr){
-  if(!setsStr) return 3;
-  var m=setsStr.match(/^(\d+)/);
-  return m?Math.min(parseInt(m[1]),6):3;
-}
+function parseSets(setsStr){if(!setsStr)return 3;var m=setsStr.match(/^(\d+)/);return m?Math.min(parseInt(m[1]),6):3;}
 
 var DAYS = [
   { label:"MON", title:"🌀 Hip Mobility & Control", sub:"Machines & cables · Full range of motion", homesub:"Zero equipment · Feet planted · Go slow", exercises:[
@@ -162,9 +161,7 @@ function LogForm(props) {
     filled.forEach(function(r,i){existing.push({set:i+1,reps:r.reps,weight:r.weight,time:timestamp});});
     safeSet(key,JSON.stringify(existing));
     var reset=[];for(var i=0;i<numSets;i++)reset.push(makeRow());
-    setRows(reset);
-    setSaving(false);
-    props.onSaved();
+    setRows(reset);setSaving(false);props.onSaved();
   }
 
   return React.createElement('div',{style:{background:'#0a0010',border:'1px solid #3b0764',borderRadius:10,padding:12,marginTop:8}},
@@ -193,6 +190,7 @@ function LogForm(props) {
 function HistoryView() {
   var d=useState(null),setData=d[1];d=d[0];
   var rf=useState(0),setRf=rf[1];rf=rf[0];
+  var op=useState({}),openDates=op[0],setOpenDates=op[1];
 
   useEffect(function(){
     var keys=safeKeys('gdt_');
@@ -206,6 +204,8 @@ function HistoryView() {
     });
     setData(byDate);
   },[rf]);
+
+  function toggleDate(date){setOpenDates(function(prev){var n=Object.assign({},prev);n[date]=!prev[date];return n;});}
 
   function delEntry(key,idx){
     var entries=JSON.parse(safeGet(key)||'[]');
@@ -222,9 +222,17 @@ function HistoryView() {
     dates.map(function(date){
       var exs=d[date];
       var friendly=friendlyDate(date);
-      return React.createElement('div',{key:date,style:{background:'#1a0030',border:'1px solid #3b0764',borderRadius:12,marginBottom:12,overflow:'hidden'}},
-        React.createElement('div',{style:{padding:'10px 14px',background:'#2a0050',fontSize:13,fontWeight:800,color:'#c084fc'}},'📅 '+friendly),
-        React.createElement('div',{style:{padding:'10px 14px'}},
+      var isOpen=!!openDates[date];
+      var totalSets=Object.values(exs).reduce(function(sum,entries){return sum+entries.length;},0);
+      return React.createElement('div',{key:date,style:{background:'#1a0030',border:'1px solid #3b0764',borderRadius:12,marginBottom:10,overflow:'hidden'}},
+        React.createElement('div',{className:'hist-day-header',onClick:function(){toggleDate(date);}},
+          React.createElement('div',null,
+            React.createElement('div',{className:'hist-day-title'},'📅 '+friendly),
+            React.createElement('div',{style:{fontSize:10,color:'#6b7280',marginTop:2}},Object.keys(exs).length+' exercise'+(Object.keys(exs).length!==1?'s':'')+' · '+totalSets+' set'+(totalSets!==1?'s':''))
+          ),
+          React.createElement('div',{className:'hist-day-toggle'},isOpen?'▲ Hide':'▼ Show')
+        ),
+        isOpen&&React.createElement('div',{style:{padding:'10px 14px'}},
           Object.keys(exs).map(function(ex){
             var entries=exs[ex];
             var logKey='gdt_'+date+'_'+ex.replace(/\s+/g,'-');
@@ -325,6 +333,9 @@ function App() {
   var headerBg=isHome?'linear-gradient(135deg,#064e3b,#059669)':'linear-gradient(135deg,#4a0080,#c44dff)';
 
   return React.createElement('div',{style:{fontFamily:'system-ui,sans-serif',maxWidth:460,margin:'0 auto',padding:16,backgroundColor:'#0a0010',minHeight:'100vh'}},
+
+    React.createElement('a',{href:'https://fletch1980.github.io/Complete_goddess/',className:'back-btn'},'👑 Home'),
+
     React.createElement('div',{style:{background:headerBg,borderRadius:14,padding:'18px 20px',color:'white',marginBottom:16}},
       React.createElement('div',{style:{fontSize:22,fontWeight:800}},'👑 Goddess Training'),
       React.createElement('div',{style:{fontSize:13,opacity:0.9,marginTop:2}},isHome?'🏠 At Home · Bands & Bodyweight':'🏋️ Gym · Cables · Machines · Dumbbells'),
@@ -339,7 +350,6 @@ function App() {
       React.createElement('button',{onClick:function(){setMainTab('workout');},style:{flex:1,padding:'9px 4px',borderRadius:8,border:'none',cursor:'pointer',fontSize:12,fontWeight:700,background:!isLog?'#7c3aed':'transparent',color:!isLog?'white':'#9ca3af'}},'🏋️ Workout'),
       React.createElement('button',{onClick:function(){setMainTab('log');setHistRefresh(function(x){return x+1;});},style:{flex:1,padding:'9px 4px',borderRadius:8,border:'none',cursor:'pointer',fontSize:12,fontWeight:700,background:isLog?'#7c3aed':'transparent',color:isLog?'white':'#9ca3af'}},'📅 Log History')
     ),
-    // Active date bar (workout tab only)
     !isLog&&React.createElement('div',null,
       React.createElement('div',{className:'active-date-bar'},
         React.createElement('span',null,'📅 Logging for: ',React.createElement('strong',null,isToday?'Today ('+friendlyDate(logDate)+')':friendlyDate(logDate))),
