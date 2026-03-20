@@ -46,6 +46,8 @@
     .hist-day-toggle{font-size:11px;color:#a78bfa;font-weight:700;}
     .week-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px;}
     .week-btn{padding:8px 4px;border-radius:8px;border:1px solid #3b0764;cursor:pointer;font-size:11px;font-weight:700;text-align:center;transition:all 0.2s;}
+    .yt-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:#ff0000;border:none;border-radius:8px;color:white;font-size:12px;font-weight:700;padding:8px 12px;cursor:pointer;margin-bottom:10px;text-decoration:none;}
+    .yt-btn:hover{background:#cc0000;}
   </style>
 </head>
 <body>
@@ -61,15 +63,9 @@ function safeRemove(k){try{localStorage.removeItem(k);}catch(e){}}
 function safeKeys(prefix){var keys=[];try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.startsWith(prefix))keys.push(k);}}catch(e){}return keys;}
 function parseSets(s){if(!s)return 3;var m=s.match(/^(\d+)/);return m?Math.min(parseInt(m[1]),6):3;}
 function getInitialTab(){var d=new Date().getDay();if(d===1)return 0;if(d===2)return 1;if(d===3)return 2;if(d===4)return 3;return 0;}
-
-// ─── EXERCISE LIBRARY ─────────────────────────────────────────────────────────
-// ALL exercises here are unique to Goddess — none overlap with the Glute Finisher app.
-// Glute Finisher owns: Hip Thrusts, RDL, Bulgarian Split Squat, Sumo Squat, Banded Abduction,
-//   Hip Bridges, Dead Bug, Side Plank, Curtsy Lunge, Step Ups, Clamshells, Single Leg DL
+function ytUrl(name){return 'https://www.youtube.com/results?search_query='+encodeURIComponent(name+' exercise how to');}
 
 var EX = {
-
-  // ── MONDAY: Hip Mobility & Flow ──────────────────────────────────────────
   hipCircles:{name:"Standing Hip Circles",emoji:"🌀",area:"Hip Joint Mobility",
     gymsets:"3 × 20 each dir",homesets:"3 × 20 each dir",
     notes:"Trace big slow circles with your hips. Upper body stays completely still.",
@@ -136,7 +132,6 @@ var EX = {
     mod:"Can't sit on floor? Sit on bench edge, cross ankle over opposite knee.",modHome:"Same.",
     feel:"Gentle stretch in inner thighs and groin — never sharp pain.",feelHome:"Same."},
 
-  // ── TUESDAY: Twerk & Bounce Control ──────────────────────────────────────
   gluteIsolateBounce:{name:"Glute Isolation Bounce",emoji:"🍑",area:"Glute Isolation — Body Control",
     gymsets:"3 × 30 sec",homesets:"3 × 30 sec",
     notes:"Feet hip-width, slight bend in knees. Isolate each cheek alternately — this is not a squat. Upper body stays still.",
@@ -183,7 +178,7 @@ var EX = {
 
   hipThrustPop:{name:"Hip Thrust Pulse & Pop",emoji:"⬆️",area:"Glute Expression & Control",
     gymsets:"3 × 15 + 10 pulses",homesets:"3 × 15 + 10 pulses",
-    notes:"Drive up into bridge, hold at top, then 10 small pulses before lowering. No barbell — this is about control, not load. The booty app handles heavy hip thrusts.",
+    notes:"Drive up into bridge, hold at top, then 10 small pulses before lowering. No barbell — this is about control, not load.",
     homenotes:"Same on a mat — bodyweight or light band across hips.",
     tip:"Press the floor away with your heels — keeps glutes in contraction throughout.",
     hometip:"Add a resistance band above hips for more burn.",
@@ -203,8 +198,6 @@ var EX = {
     mod:"Struggling to kneel on hard floor? Double up the mat.",modHome:"Stand in a lunge instead.",
     feel:"Stretch in front of the hip of your back leg.",feelHome:"Same."},
 
-  // ── WEDNESDAY: Core Stamina — Goddess-Specific Movements ────────────────
-  // NOTE: Dead Bug and Side Plank are in the Glute Finisher waist circuit — not repeated here.
   plankHipDip:{name:"Plank Hip Dips",emoji:"🌀",area:"Obliques — Rotational",
     gymsets:"3 × 15 each side",homesets:"3 × 15 each side",
     notes:"From forearm plank, rotate hips to dip toward the floor on each side. Oblique-focused, not glute-focused.",
@@ -218,7 +211,7 @@ var EX = {
 
   bearCrawlHold:{name:"Bear Crawl Hold",emoji:"🐻",area:"Deep Core & Anti-Rotation",
     gymsets:"3 × 30 sec",homesets:"3 × 30 sec",
-    notes:"Hover knees 1 inch off floor — abs and hips braced. Harder than it looks. Different from any glute finisher exercise.",
+    notes:"Hover knees 1 inch off floor — abs and hips braced. Harder than it looks.",
     homenotes:"Same on a mat.",
     tip:"Push the floor away with your hands — locks in your shoulder and core together.",
     hometip:"Same.",
@@ -240,7 +233,7 @@ var EX = {
 
   pallofPress:{name:"Pallof Press Hold",emoji:"⚡",area:"Anti-Rotation Core",
     gymsets:"3 × 10 each side",homesets:"3 × 10 each side",
-    notes:"Band anchored at chest height. Press out and hold 3 seconds — core fights the rotation. Unique to Goddess.",
+    notes:"Band anchored at chest height. Press out and hold 3 seconds — core fights the rotation.",
     homenotes:"Band anchored in a doorframe.",
     tip:"The further from the anchor, the harder. Move feet out to progress.",
     hometip:"Same.",
@@ -262,7 +255,7 @@ var EX = {
 
   supineHipRock:{name:"Supine Hip Rock",emoji:"🔁",area:"Hip Mobility — Floor Based",
     gymsets:"3 × 20 reps",homesets:"3 × 20 reps",
-    notes:"Lie on back, knees bent, feet flat. Rock knees side to side in a controlled windshield wiper motion. This is hip mobility, not core.",
+    notes:"Lie on back, knees bent, feet flat. Rock knees side to side in a controlled windshield wiper motion.",
     homenotes:"Same on a mat.",
     tip:"The slower the rock, the more hip mobility benefit. This is not a speed drill.",
     hometip:"Same.",
@@ -271,10 +264,9 @@ var EX = {
     mod:"Hips lifting off floor? Reduce the range.",modHome:"Same.",
     feel:"Hip joint gently rotating — a release, not an effort.",feelHome:"Same."},
 
-  // ── THURSDAY: Inner Thigh & Pelvic Floor ─────────────────────────────────
   seatedInnerThigh:{name:"Seated Inner Thigh Machine",emoji:"🟣",area:"Inner Thighs — Adductors",
     gymsets:"3 × 20 reps",homesets:"3 × 20 reps",
-    notes:"Adductor machine — squeeze legs TOGETHER. Control the opening. Not in the Glute Finisher.",
+    notes:"Adductor machine — squeeze legs TOGETHER. Control the opening.",
     homenotes:"Band around knees, seated — squeeze knees together against band.",
     tip:"Control the opening — do not let machine push legs apart. The slow open is half the exercise.",
     hometip:"Band should create real resistance — heavy band if light feels easy.",
@@ -285,7 +277,7 @@ var EX = {
 
   innerThighPulse:{name:"Inner Thigh Pulse — Lying",emoji:"🌸",area:"Inner Thighs — Isolation",
     gymsets:"3 × 30 sec each leg",homesets:"3 × 30 sec each leg",
-    notes:"Lie on side, bottom leg straight. Lift bottom leg up toward top leg — pulse at the top. Purely inner thigh.",
+    notes:"Lie on side, bottom leg straight. Lift bottom leg up toward top leg — pulse at the top.",
     homenotes:"Same on a mat.",
     tip:"Keep your top foot on the floor in front of you for balance — not stacked on the bottom leg.",
     hometip:"Same.",
@@ -318,7 +310,7 @@ var EX = {
 
   sumoSquatHold:{name:"Sumo Squat Isometric Squeeze",emoji:"🦵",area:"Inner Thighs & Pelvic Floor — Combined",
     gymsets:"3 × 10 sec squeeze × 10",homesets:"3 × 10 sec squeeze × 10",
-    notes:"Sumo squat position — hold it and squeeze inner thighs toward each other without moving. Isometric only. Different goal from the Glute Finisher's sumo squat.",
+    notes:"Sumo squat position — hold it and squeeze inner thighs toward each other without moving. Isometric only.",
     homenotes:"Same without dumbbell.",
     tip:"Like trying to close your legs while they stay wide open. Pure isometric.",
     hometip:"Same.",
@@ -329,7 +321,7 @@ var EX = {
 
   frogPump:{name:"Frog Pump",emoji:"🐸",area:"Inner Thighs & Pelvic Floor — Combo",
     gymsets:"4 × 20 reps",homesets:"4 × 20 reps",
-    notes:"On back, soles of feet together, drive hips up squeezing inner thighs AND glutes AND pelvic floor simultaneously. Triple activation.",
+    notes:"On back, soles of feet together, drive hips up squeezing inner thighs AND glutes AND pelvic floor simultaneously.",
     homenotes:"Same on mat — add band above knees for more resistance.",
     tip:"The soles-together position forces inner thighs and pelvic floor to work together in a way standard hip thrusts don't.",
     hometip:"Band above knees makes this significantly harder.",
@@ -340,7 +332,7 @@ var EX = {
 
   bridgePelvicFloor:{name:"Bridge with Pelvic Floor Hold",emoji:"🌷",area:"Pelvic Floor & Glute Integration",
     gymsets:"3 × 10 reps",homesets:"3 × 10 reps",
-    notes:"Glute bridge — but the FOCUS is the simultaneous pelvic floor contraction at the top. The Glute Finisher uses bridges for glute load. Here the intention is the pelvic floor coordination.",
+    notes:"Glute bridge — but the FOCUS is the simultaneous pelvic floor contraction at the top.",
     homenotes:"Same on mat — bodyweight only.",
     tip:"Double contraction — glutes AND pelvic floor together — is the most powerful combo here.",
     hometip:"Same.",
@@ -349,10 +341,9 @@ var EX = {
     mod:"Can't hold 3 seconds? Start with 1 second and build.",modHome:"Partial bridge still activates both.",
     feel:"Glutes working AND subtle internal pelvic floor lift at the top.",feelHome:"Same."},
 
-  // ── PHASE 2+ SWAPS ──────────────────────────────────────────────────────
   hipFigure4Stretch:{name:"Figure 4 Hip Stretch — Active",emoji:"🔺",area:"Hip External Rotation & Piriformis",
     gymsets:"3 × 45 sec each side",homesets:"3 × 45 sec each side",
-    notes:"Lie on back, cross ankle over opposite knee, flex foot. Actively pull knee toward chest. Deep hip rotator stretch.",
+    notes:"Lie on back, cross ankle over opposite knee, flex foot. Actively pull knee toward chest.",
     homenotes:"Same on mat.",
     tip:"Flex your foot hard — this protects the knee and deepens the stretch.",
     hometip:"Same.",
@@ -363,7 +354,7 @@ var EX = {
 
   deepSquatHipOpener:{name:"Deep Squat Hip Opener",emoji:"🏮",area:"Hip Mobility — Deep Range",
     gymsets:"2 × 2 min hold",homesets:"2 × 2 min hold",
-    notes:"Hold the bottom of a squat, using elbows to push knees out. Breathing is the exercise — each exhale you sink deeper.",
+    notes:"Hold the bottom of a squat, using elbows to push knees out. Breathing is the exercise.",
     homenotes:"Same — hold onto a door frame or squat rack for support.",
     tip:"Do not force depth — breathe and let gravity do the work over 2 minutes.",
     hometip:"Hold onto a sturdy surface for support.",
@@ -374,7 +365,7 @@ var EX = {
 
   windmillStretch:{name:"Windmill Hip Stretch",emoji:"🌬️",area:"Hip Mobility & Lateral Stretch",
     gymsets:"3 × 10 each side",homesets:"3 × 10 each side",
-    notes:"Stand feet wide, reach one hand down toward the opposite foot while the other arm reaches up. Hip and side body opening.",
+    notes:"Stand feet wide, reach one hand down toward the opposite foot while the other arm reaches up.",
     homenotes:"Same — no equipment.",
     tip:"Keep both legs straight — the stretch is in the hip and side, not hamstring.",
     hometip:"Same.",
@@ -385,7 +376,7 @@ var EX = {
 
   seatedSpinalRotation:{name:"Seated Spinal Rotation",emoji:"🌪️",area:"Spinal Mobility — Thoracic",
     gymsets:"3 × 10 each side",homesets:"3 × 10 each side",
-    notes:"Sit tall on bench or floor, rotate slowly through your thoracic spine — not lumbar. Creates the twist and flow that goddess movement depends on.",
+    notes:"Sit tall on bench or floor, rotate slowly through your thoracic spine — not lumbar.",
     homenotes:"Same on floor or chair edge.",
     tip:"Think about rotating from your mid-back, not from your lower back or neck.",
     hometip:"Same.",
@@ -395,7 +386,6 @@ var EX = {
     feel:"Mid-back rotating — spine feels more mobile after.",feelHome:"Same."}
 };
 
-// ─── 12-WEEK PROGRAM ─────────────────────────────────────────────────────────
 var PROGRAM = {
   mon:{
     p1:['hipCircles','fig8Rolls','hipWind','kneelingHipWind','lateralHipShift','deepButterflyStretch'],
@@ -437,7 +427,6 @@ function getExForWeekDay(w,dayKey){
   return keys.map(function(k){return EX[k];});
 }
 
-// ─── CALENDAR PICKER ─────────────────────────────────────────────────────────
 function CalendarPicker(props){
   var activeDate=props.activeDate,onSelect=props.onSelect;
   var todayISO=todayStr();
@@ -471,7 +460,6 @@ function CalendarPicker(props){
   );
 }
 
-// ─── LOG FORM ────────────────────────────────────────────────────────────────
 function LogForm(props){
   var numSets=parseSets(props.isHome?props.homesets:props.gymsets);
   function makeRow(){return{reps:'',weight:''};}
@@ -516,7 +504,6 @@ function LogForm(props){
   );
 }
 
-// ─── HISTORY VIEW ─────────────────────────────────────────────────────────────
 function HistoryView(){
   var s1=useState(null),data=s1[0],setData=s1[1];
   var s2=useState(0),rf=s2[0],setRf=s2[1];
@@ -580,7 +567,6 @@ function HistoryView(){
   );
 }
 
-// ─── EXERCISE CARD ────────────────────────────────────────────────────────────
 function Card(props){
   var ex=props.ex,isDone=props.isDone,isOpen=props.isOpen,isHome=props.isHome,showLog=props.showLog,logDate=props.logDate;
   var sets=isHome?ex.homesets:ex.gymsets;
@@ -602,6 +588,8 @@ function Card(props){
     ),
     React.createElement('div',{style:{fontSize:12,color:'#9ca3af',lineHeight:1.5,marginBottom:8}},notes),
     React.createElement('div',{style:{background:'#0a0010',borderRadius:8,padding:'6px 10px',fontSize:11,color:'#c084fc',fontStyle:'italic',marginBottom:10}},'💡 '+tip),
+    // YouTube button
+    React.createElement('a',{href:ytUrl(ex.name),target:'_blank',className:'yt-btn'},'▶ Watch Example on YouTube'),
     React.createElement('div',{style:{display:'flex',gap:8,marginBottom:8}},
       React.createElement('button',{onClick:props.onExpand,style:{flex:1,background:isOpen?'#3b0764':'#0a0010',border:'1px solid #3b0764',borderRadius:8,padding:'6px 14px',fontSize:12,color:'#a78bfa',fontWeight:700,cursor:'pointer'}},isOpen?'▲ Hide How To':'▼ How To'),
       React.createElement('button',{onClick:props.onToggleLog,style:{flex:1,background:showLog?'#7c3aed':'#0a0010',border:'1px solid #7c3aed',borderRadius:8,padding:'6px 14px',fontSize:12,color:showLog?'white':'#c084fc',fontWeight:700,cursor:'pointer'}},showLog?'▲ Hide Log':'📝 Log')
@@ -621,7 +609,6 @@ function Card(props){
   );
 }
 
-// ─── APP ─────────────────────────────────────────────────────────────────────
 function App(){
   var s1=useState(getInitialTab),tab=s1[0],setTab=s1[1];
   var s2=useState('gym'),mode=s2[0],setMode=s2[1];
