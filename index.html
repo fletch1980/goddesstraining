@@ -395,6 +395,15 @@ function App(){
     isLog&&React.createElement(HistoryView,{key:histRefresh}),
 
     !isLog&&React.createElement('div',null,
+      React.createElement('div',{style:{marginBottom:14}},
+        React.createElement('div',{style:{fontSize:11,fontWeight:700,color:'#6b7280',letterSpacing:1,marginBottom:6}},'WEEK'),
+        React.createElement('div',{style:{display:'flex',gap:4,flexWrap:'wrap'}},
+          [1,2,3,4,5,6,7,8,9,10,11,12].map(function(w){
+            var isAuto=w===currentWeek;
+            return React.createElement('button',{key:w,style:{width:'calc(25% - 3px)',padding:'7px 2px',borderRadius:8,border:isAuto?'2px solid #c084fc':'1px solid #3b0764',cursor:'default',fontSize:11,fontWeight:700,background:isAuto?getPhaseColor(currentWeek):'#1a0030',color:isAuto?'white':'#9ca3af'}},'Wk '+w);
+          })
+        )
+      ),
       React.createElement('div',{className:'active-date-bar'},
         React.createElement('span',null,'📅 ',React.createElement('strong',null,isToday?'Today ('+friendlyDate(logDate)+')':friendlyDate(logDate))),
         React.createElement('div',{style:{display:'flex',gap:6}},
