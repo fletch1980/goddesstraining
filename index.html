@@ -44,18 +44,23 @@
     .hist-day-header:active{opacity:0.8;}
     .hist-day-title{font-size:13px;font-weight:800;color:#c084fc;}
     .hist-day-toggle{font-size:11px;color:#a78bfa;font-weight:700;}
-    .week-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px;}
-    .week-btn{padding:8px 4px;border-radius:8px;border:1px solid #3b0764;cursor:pointer;font-size:11px;font-weight:700;text-align:center;transition:all 0.2s;}
     .block-header{background:#2a0050;border-radius:10px;padding:10px 14px;margin-bottom:10px;margin-top:4px;border-left:4px solid #7c3aed;}
     .block-title{font-size:13px;font-weight:800;color:#c084fc;}
     .block-sub{font-size:11px;color:#6b7280;margin-top:2px;}
     .yt-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:#ff0000;border:none;border-radius:8px;color:white;font-size:12px;font-weight:700;padding:8px 12px;cursor:pointer;margin-bottom:10px;text-decoration:none;}
     .yt-btn:hover{background:#cc0000;}
+    .phase-badge{display:inline-block;color:white;font-size:10px;font-weight:800;border-radius:20px;padding:3px 10px;letter-spacing:1px;}
+    .week-badge{display:inline-block;background:#1a0030;border:1px solid #7c3aed;color:#c084fc;font-size:10px;font-weight:800;border-radius:20px;padding:3px 10px;margin-left:6px;}
+    .prog-bar-wrap{background:rgba(255,255,255,0.15);border-radius:20px;height:6px;overflow:hidden;margin-top:6px;}
+    .prog-bar{height:100%;border-radius:20px;background:rgba(255,255,255,0.9);transition:width 0.4s;}
   </style>
 </head>
 <body>
 <div id="root"></div>
 <script>
+var STORAGE_PREFIX = 'gdt_';
+var SESSIONS_TO_ADVANCE = 2;
+
 var useState=React.useState,useEffect=React.useEffect;
 
 function todayStr(){var n=new Date(),y=n.getFullYear(),mo=n.getMonth()+1,d=n.getDate();return y+'-'+(mo<10?'0'+mo:mo)+'-'+(d<10?'0'+d:d);}
@@ -69,6 +74,25 @@ function getPhaseColor(w){return w<=4?'#7c3aed':w<=8?'#059669':'#db2777';}
 function getPhaseIdx(w){return w<=4?0:w<=8?1:2;}
 function ytUrl(name){return 'https://www.youtube.com/results?search_query='+encodeURIComponent(name+' exercise how to');}
 
+// ── SESSION TRACKING ─────────────────────────────────────────
+function recordSession(weekNum, dateStr){
+  var key=STORAGE_PREFIX+'sessions_w'+weekNum;
+  var sessions=JSON.parse(safeGet(key)||'[]');
+  if(sessions.indexOf(dateStr)===-1){sessions.push(dateStr);safeSet(key,JSON.stringify(sessions));}
+}
+function getSessionsForWeek(weekNum){
+  return JSON.parse(safeGet(STORAGE_PREFIX+'sessions_w'+weekNum)||'[]');
+}
+function calcCurrentWeek(){
+  var week=1;
+  for(var w=1;w<=12;w++){
+    var sessions=getSessionsForWeek(w);
+    if(sessions.length>=SESSIONS_TO_ADVANCE){week=w<12?w+1:12;}
+    else{week=w;break;}
+  }
+  return week;
+}
+
 var BLOCKS = [
   {
     id:'activation',
@@ -77,22 +101,19 @@ var BLOCKS = [
     color:'#db2777',
     exercises:[
       {name:'Clamshell',area:'Glute Med — Activation',emoji:'🦀',
-        sets:2,
-        reps:['12 each side','15 each side','20 each side'],
+        sets:2,reps:['12 each side','15 each side','20 each side'],
         gym:'Lie on side, knees bent, feet together. Open top knee like a clamshell. Add a resistance band above knees for more resistance.',
         home:'Lie on side, knees bent, feet together. Open top knee like a clamshell. Keep hips stacked — do not roll back.',
         tip:'Add a resistance band above knees in Weeks 5+ for more burn.',
         howto:['Lie on your side, hips stacked, knees bent at 90°','Keep feet together throughout','Slowly lift your top knee as high as possible without rotating your hips','Squeeze your outer glute at the top — hold 1 second','Lower slowly — do not let it drop','Keep your core lightly engaged so your hips stay stacked']},
       {name:'Fire Hydrant',area:'Glute Med — Hip Activation',emoji:'🔥',
-        sets:2,
-        reps:['12 each side','15 each side','20 each side'],
+        sets:2,reps:['12 each side','15 each side','20 each side'],
         gym:'On all fours, lift one knee out to the side keeping it bent at 90°. Add ankle weight for more resistance.',
         home:'On all fours, lift one knee out to the side keeping it bent at 90°. Squeeze glute at top — bodyweight only.',
         tip:'Drive your knee as high as possible — height equals glute activation.',
         howto:['Start on all fours — hands under shoulders, knees under hips','Keep your knee bent at 90° throughout','Lift your right knee out to the side like a dog at a fire hydrant','Squeeze your right glute hard at the top','Lower slowly back to start','Keep your back flat — do not rotate your torso']},
       {name:'Glute Bridge Squeeze Hold',area:'Glutes — Full Activation',emoji:'🍑',
-        sets:2,
-        reps:['10 reps × 3 sec hold','12 reps × 3 sec hold','15 reps × 5 sec hold'],
+        sets:2,reps:['10 reps × 3 sec hold','12 reps × 3 sec hold','15 reps × 5 sec hold'],
         gym:'Lie on back, knees bent. Drive hips up and squeeze both glutes hard at the top. Place a barbell or weight plate across hips for added resistance in Weeks 5+.',
         home:'Lie on back, knees bent. Drive hips up and squeeze both glutes hard at the top. Loop a resistance band across hips for added resistance in Weeks 5+.',
         tip:'The squeeze hold is everything — if you are not squeezing hard at the top, you are just moving through the motion.',
@@ -106,29 +127,25 @@ var BLOCKS = [
     color:'#7c3aed',
     exercises:[
       {name:'Reverse Crunch',area:'Lower Abs',emoji:'🔄',
-        sets:3,
-        reps:['12 reps','15 reps','20 reps'],
+        sets:3,reps:['12 reps','15 reps','20 reps'],
         gym:'Lie on a flat bench, grip the edge behind your head for stability. Use your lower abs to curl your hips up.',
         home:'Lie on the floor, arms at sides. Use your lower abs to curl your hips off the floor. Never use momentum.',
         tip:'If you feel it in your hip flexors more than your abs, slow down even more.',
         howto:['Lie on your back, legs raised with knees slightly bent','Press your lower back firmly into the floor','Using your lower abs, curl your hips up off the floor — a small movement','Hold at the top for 1 second','Lower slowly — do not drop or use momentum','Your lower back stays on the floor throughout']},
       {name:'Lying Leg Raise',area:'Lower Abs',emoji:'⬆️',
-        sets:3,
-        reps:['10 reps','12 reps','15 reps'],
+        sets:3,reps:['10 reps','12 reps','15 reps'],
         gym:'Lie flat on a bench, grip the edge behind your head. Raise both legs to 90° then lower slowly. The bench lets you go past parallel for more range.',
         home:'Lie flat on the floor, arms at your sides. Raise both legs to 90° then lower slowly. Stop before your lower back lifts.',
         tip:'Bend your knees slightly if your lower back lifts — never sacrifice form for range.',
         howto:['Lie flat on your back, legs straight, arms at your sides','Press your lower back firmly into the floor','Raise both legs straight up toward the ceiling','Lower slowly — stop before your lower back lifts','Raise again without letting your feet touch the floor','Keep the movement slow and controlled throughout']},
       {name:'Crunch with Reach',area:'Upper Abs',emoji:'✋',
-        sets:3,
-        reps:['15 reps','20 reps','25 reps'],
+        sets:3,reps:['15 reps','20 reps','25 reps'],
         gym:'Lie on a mat, knees bent. Hold a light weight plate at your chest for added resistance as you crunch up and reach forward.',
         home:'Lie on the floor, knees bent. Reach both arms forward toward your knees as you crunch up. Exhale hard at the top.',
         tip:'Exhale completely at the top — that forced exhale doubles the ab contraction.',
         howto:['Lie on your back, knees bent, feet flat on floor','Extend both arms straight toward your knees','Curl your head and shoulders off the floor — reach your hands toward your knees','Exhale hard at the top','Lower slowly — shoulders barely touch before next rep','This is a short range of motion — do not do a full sit up']},
       {name:'Scissor Kick',area:'Lower Abs — Stamina',emoji:'✂️',
-        sets:3,
-        reps:['20 sec','30 sec','45 sec'],
+        sets:3,reps:['20 sec','30 sec','45 sec'],
         gym:'Lie on a flat bench for a greater range of motion. Lower back pressed firmly into the bench. Alternate legs in a scissor motion.',
         home:'Lie on the floor, lower back pressed firmly down. Raise both legs and alternate crossing them up and down in a scissors motion.',
         tip:'The lower your legs, the harder your abs work — find your edge without your lower back lifting.',
@@ -142,22 +159,19 @@ var BLOCKS = [
     color:'#059669',
     exercises:[
       {name:'Dead Bug',area:'Transverse Abs — Deep Core',emoji:'🐛',
-        sets:3,
-        reps:['8 each side','10 each side','12 each side'],
+        sets:3,reps:['8 each side','10 each side','12 each side'],
         gym:'Lie on a mat, arms up, knees at 90° in air. Lower opposite arm and leg toward floor. Lower back glued down always. Hold a light dumbbell in each hand in Weeks 9+ for added challenge.',
         home:'Lie on the floor, arms up, knees at 90° in air. Lower opposite arm and leg toward floor. Lower back glued to floor — always.',
         tip:'Exhale hard as you extend — that forced exhale is what activates the deep core.',
         howto:['Lie on your back, arms pointing straight up toward ceiling','Raise both knees to 90° — shins parallel to floor','Press your lower back FIRMLY into the floor — it must not lift','Slowly lower your right arm overhead and left leg toward the floor simultaneously','Keep your lower back glued down — if it lifts, reduce your range','Return slowly and switch sides','Never rush — slow is the whole point']},
       {name:'Bird Dog',area:'Core Stability — Back Safe',emoji:'🐦',
-        sets:3,
-        reps:['8 each side','10 each side','12 each side'],
+        sets:3,reps:['8 each side','10 each side','12 each side'],
         gym:'On all fours on a mat. Extend opposite arm and leg, hold 2 seconds. Add light ankle weights in Weeks 9+ for more glute activation.',
         home:'On all fours on the floor. Extend opposite arm and leg. Hold 2 seconds. Back stays flat — no sagging or rotating.',
         tip:'Squeeze your glute on the working leg as you extend — glute activation bonus built in.',
         howto:['Start on all fours — hands under shoulders, knees under hips','Keep your back completely flat — neutral spine','Slowly extend your right arm forward and left leg back simultaneously','Squeeze your left glute at the top — hold 2 seconds','Return to start slowly','Switch sides — right leg, left arm','Your hips must stay level — do not rotate or let one side drop']},
       {name:'Forearm Plank Hold',area:'Core Stamina — Full Body',emoji:'🧱',
-        sets:3,
-        reps:['20 sec','35 sec','50 sec'],
+        sets:3,reps:['20 sec','35 sec','50 sec'],
         gym:'Forearms on a mat, body in a straight line. Squeeze glutes, abs, and thighs. Add a weight plate on your back in Weeks 9+ for advanced progression.',
         home:'Forearms on floor, body in a straight line from head to heels. Squeeze everything — glutes, abs, thighs.',
         tip:'Squeezing your glutes during a plank turns it into a glute exercise too — never just hang in it.',
@@ -166,6 +180,7 @@ var BLOCKS = [
   }
 ];
 
+// ── CALENDAR ──────────────────────────────────────────────────
 function CalendarPicker(props){
   var activeDate=props.activeDate,onSelect=props.onSelect,todayISO=todayStr();
   var initY=parseInt(activeDate.slice(0,4)),initM=parseInt(activeDate.slice(5,7))-1;
@@ -193,6 +208,7 @@ function CalendarPicker(props){
   );
 }
 
+// ── LOG FORM ──────────────────────────────────────────────────
 function LogForm(props){
   var numSets=props.sets||3;
   function makeRow(){return{reps:'',note:''};}
@@ -207,11 +223,12 @@ function LogForm(props){
     if(!filled.length)return;
     setSaving(true);
     var logDate=props.logDate||todayStr();
-    var key='gdt_'+logDate+'_'+props.exName.replace(/\s+/g,'-');
+    var key=STORAGE_PREFIX+logDate+'_'+props.exName.replace(/\s+/g,'-');
     var existing=JSON.parse(safeGet(key)||'[]');
     var ts=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
     filled.forEach(function(r,i){existing.push({set:i+1,reps:r.reps,note:r.note,time:ts});});
     safeSet(key,JSON.stringify(existing));
+    recordSession(props.currentWeek, logDate);
     var reset=[];for(var i=0;i<numSets;i++)reset.push(makeRow());
     setRows(reset);setSaving(false);props.onSaved();
   }
@@ -237,15 +254,16 @@ function LogForm(props){
   );
 }
 
+// ── HISTORY ───────────────────────────────────────────────────
 function HistoryView(){
   var d=useState(null),setData=d[1];d=d[0];
   var rf=useState(0),setRf=rf[1];rf=rf[0];
   var op=useState({}),openDates=op[0],setOpenDates=op[1];
   useEffect(function(){
-    var keys=safeKeys('gdt_');
+    var keys=safeKeys(STORAGE_PREFIX).filter(function(k){return k.indexOf('sessions_')===-1;});
     var byDate={};
     keys.forEach(function(k){
-      var parts=k.replace('gdt_','').split('_');
+      var parts=k.replace(STORAGE_PREFIX,'').split('_');
       var date=parts[0],ex=parts.slice(1).join(' ').replace(/-/g,' ');
       var entries=JSON.parse(safeGet(k)||'[]');
       if(!byDate[date])byDate[date]={};
@@ -276,7 +294,7 @@ function HistoryView(){
       ),
       isOpen&&React.createElement('div',{style:{padding:'10px 14px'}},
         Object.keys(exs).map(function(ex){
-          var entries=exs[ex],logKey='gdt_'+date+'_'+ex.replace(/\s+/g,'-');
+          var entries=exs[ex],logKey=STORAGE_PREFIX+date+'_'+ex.replace(/\s+/g,'-');
           return React.createElement('div',{key:ex,className:'hist-block'},
             React.createElement('div',{className:'hist-date'},ex),
             entries.map(function(entry,idx){
@@ -298,6 +316,7 @@ function HistoryView(){
   }));
 }
 
+// ── APP ───────────────────────────────────────────────────────
 function App(){
   var mo=useState('home'),mode=mo[0],setMode=mo[1];
   var c=useState({}),checked=c[0],setChecked=c[1];
@@ -307,14 +326,13 @@ function App(){
   var hr=useState(0),histRefresh=hr[0],setHistRefresh=hr[1];
   var ld=useState(todayStr()),logDate=ld[0],setLogDate=ld[1];
   var sc=useState(false),showCal=sc[0],setShowCal=sc[1];
+  var rf=useState(0),refresh=rf[0],setRefresh=rf[1];
 
-  var savedWeek=parseInt(safeGet('gdt_week')||'1')||1;
-  var sw=useState(savedWeek),week=sw[0],setWeekRaw=sw[1];
-  function setWeek(w){setWeekRaw(w);safeSet('gdt_week',String(w));setChecked({});}
-
-  var phaseIdx=getPhaseIdx(week);
-  var phaseColor=getPhaseColor(week);
-  var phaseLabel=getPhaseLabel(week);
+  var currentWeek=calcCurrentWeek();
+  var sessionCount=getSessionsForWeek(currentWeek).length;
+  var phaseIdx=getPhaseIdx(currentWeek);
+  var phaseColor=getPhaseColor(currentWeek);
+  var phaseLabel=getPhaseLabel(currentWeek);
   var isLog=mainTab==='log';
   var isHome=mode==='home';
   var isToday=logDate===todayStr();
@@ -322,7 +340,7 @@ function App(){
 
   var allExercises=[];
   BLOCKS.forEach(function(b){b.exercises.forEach(function(ex){allExercises.push(ex);});});
-  var done=allExercises.filter(function(_,i){return!!checked[mode+'-'+week+'-'+i];}).length;
+  var done=allExercises.filter(function(_,i){return!!checked[mode+'-'+currentWeek+'-'+i];}).length;
   var pct=(done/allExercises.length)*100;
 
   function ck(key){setChecked(function(p){var n=Object.assign({},p);n[key]=!p[key];return n;});}
@@ -339,11 +357,20 @@ function App(){
       React.createElement('div',{style:{fontSize:22,fontWeight:800}},'👑 Goddess Training'),
       React.createElement('div',{style:{fontSize:13,opacity:0.9,marginTop:2}},isHome?'🏠 At Home · Bands & Bodyweight':'🏋️ Gym · Cables, Machines & Weights'),
       React.createElement('div',{style:{fontSize:12,opacity:0.8,marginTop:2}},'Tuesday & Thursday · 20-25 min'),
-      React.createElement('div',{style:{display:'flex',alignItems:'center',gap:8,marginTop:8}},
-        React.createElement('span',{style:{background:phaseColor,color:'white',borderRadius:20,padding:'3px 12px',fontSize:11,fontWeight:800}},'Week '+week+' · '+phaseLabel)
+      React.createElement('div',{style:{display:'flex',alignItems:'center',gap:8,marginTop:8,flexWrap:'wrap'}},
+        React.createElement('span',{className:'phase-badge',style:{background:phaseColor}},getPhaseLabel(currentWeek)+' Phase'),
+        React.createElement('span',{className:'week-badge'},'Week '+currentWeek+' of 12')
+      ),
+      React.createElement('div',{style:{marginTop:10}},
+        React.createElement('div',{style:{fontSize:11,opacity:0.85,marginBottom:4}},
+          sessionCount+' of '+SESSIONS_TO_ADVANCE+' sessions this week'+(sessionCount>=SESSIONS_TO_ADVANCE?' · ✅ Advancing next week!':'')
+        ),
+        React.createElement('div',{className:'prog-bar-wrap'},
+          React.createElement('div',{className:'prog-bar',style:{width:Math.min(100,Math.round(sessionCount/SESSIONS_TO_ADVANCE*100))+'%'}})
+        )
       ),
       !isLog&&React.createElement('div',null,
-        React.createElement('div',{style:{marginTop:10,background:'rgba(255,255,255,0.25)',borderRadius:8,height:8}},
+        React.createElement('div',{style:{marginTop:8,background:'rgba(255,255,255,0.25)',borderRadius:8,height:8}},
           React.createElement('div',{style:{background:'white',borderRadius:8,height:8,width:pct+'%',transition:'width 0.3s'}})
         ),
         React.createElement('div',{style:{fontSize:12,opacity:0.85,marginTop:4}},done+' of '+allExercises.length+' complete'+(done===allExercises.length?' 👑 DONE!':''))
@@ -353,20 +380,6 @@ function App(){
     React.createElement('div',{style:{display:'flex',background:'#1a0030',borderRadius:10,padding:4,marginBottom:12,gap:4}},
       React.createElement('button',{onClick:function(){setMainTab('workout');},style:{flex:1,padding:'9px 4px',borderRadius:8,border:'none',cursor:'pointer',fontSize:12,fontWeight:700,background:!isLog?'#7c3aed':'transparent',color:!isLog?'white':'#9ca3af'}},'👑 Workout'),
       React.createElement('button',{onClick:function(){setMainTab('log');setHistRefresh(function(x){return x+1;});},style:{flex:1,padding:'9px 4px',borderRadius:8,border:'none',cursor:'pointer',fontSize:12,fontWeight:700,background:isLog?'#7c3aed':'transparent',color:isLog?'white':'#9ca3af'}},'📅 Log History')
-    ),
-
-    !isLog&&React.createElement('div',{style:{marginBottom:14}},
-      React.createElement('div',{style:{fontSize:11,color:'#6b7280',fontWeight:700,marginBottom:8,letterSpacing:1}},'SELECT WEEK'),
-      React.createElement('div',{className:'week-grid'},
-        [1,2,3,4,5,6,7,8,9,10,11,12].map(function(w){
-          var pc=getPhaseColor(w),isCur=w===week;
-          return React.createElement('button',{key:w,className:'week-btn',onClick:function(){setWeek(w);},
-            style:{background:isCur?pc:'#0a0010',color:isCur?'white':pc,borderColor:pc}},
-            React.createElement('div',null,'Wk '+w),
-            React.createElement('div',{style:{fontSize:9,opacity:0.8}},getPhaseLabel(w).slice(0,3).toUpperCase())
-          );
-        })
-      )
     ),
 
     !isLog&&React.createElement('div',null,
@@ -400,9 +413,9 @@ function App(){
           ),
           block.exercises.map(function(ex){
             var idx=exIdx++;
-            var checkKey=mode+'-'+week+'-'+idx;
-            var expandKey='e-'+mode+'-'+week+'-'+idx;
-            var logKey='l-'+mode+'-'+week+'-'+idx;
+            var checkKey=mode+'-'+currentWeek+'-'+idx;
+            var expandKey='e-'+mode+'-'+currentWeek+'-'+idx;
+            var logKey='l-'+mode+'-'+currentWeek+'-'+idx;
             var isDone=!!checked[checkKey];
             var isExpanded=!!expanded[expandKey];
             var showLog=!!logOpen[logKey];
@@ -435,7 +448,7 @@ function App(){
                   );
                 })
               ),
-              showLog&&React.createElement(LogForm,{exName:ex.name,logDate:logDate,sets:ex.sets,repsHint:ex.reps[phaseIdx],onSaved:function(){setHistRefresh(function(x){return x+1;});}})
+              showLog&&React.createElement(LogForm,{exName:ex.name,logDate:logDate,sets:ex.sets,repsHint:ex.reps[phaseIdx],currentWeek:currentWeek,onSaved:function(){setHistRefresh(function(x){return x+1;});setRefresh(function(x){return x+1;});}})
             );
           })
         );
